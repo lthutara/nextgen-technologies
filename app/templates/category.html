@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category }} - NextGen Technologies Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ category }}</h1>
+        <p class="lead">Latest research and developments in {{ category.lower() }}.</p>
+        
+        {% if articles %}
+        {% for article in articles %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ article.title }}</h5>
+                <p class="card-text">{{ article.summary }}</p>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Source: {{ article.source_name }}</small>
+                        {% if article.published_date %}
+                        <small class="text-muted">| Published: {{ article.published_date.strftime('%Y-%m-%d') }}</small>
+                        {% endif %}
+                        <small class="text-muted">| Scraped: {{ article.scraped_date.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    <a href="{{ article.source_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info">
+            <h5>No articles found for {{ category }}</h5>
+            <p>Try updating articles or check back later.</p>
+            <button class="btn btn-primary" onclick="triggerScraping('{{ category }}')">Update {{ category }} Articles</button>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Category Actions</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-success btn-sm mb-2" onclick="triggerScraping('{{ category }}')">Update {{ category }}</button>
+                <p><small class="text-muted">Fetch latest {{ category.lower() }} articles</small></p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Other Categories</h5>
+            </div>
+            <div class="card-body">
+                {% for cat in categories %}
+                {% if cat != category %}
+                <a href="/category/{{ cat }}" class="btn btn-outline-secondary btn-sm me-2 mb-2">{{ cat }}</a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
