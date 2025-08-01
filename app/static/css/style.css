@@ -1,6 +1,29 @@
+/* Telugu font support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap');
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Noto Sans', 'Noto Sans Telugu', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
+}
+
+/* Telugu-specific styling */
+.telugu-text {
+    font-family: 'Noto Sans Telugu', 'Noto Sans', sans-serif;
+    font-weight: 400;
+}
+
+/* Language toggle styling */
+.language-toggle {
+    font-size: 0.9rem;
+}
+
+.language-toggle .dropdown-item {
+    font-size: 0.85rem;
+}
+
+.language-toggle .dropdown-item.active {
+    background-color: #007bff;
+    color: white;
 }
 
 .navbar-brand {

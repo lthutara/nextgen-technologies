@@ -4,21 +4,21 @@
 <div class="row">
     <div class="col-md-8">
         <div class="hero-section mb-5">
-            <h1 class="display-4">Latest Tech News & Research</h1>
-            <p class="lead">Discover cutting-edge developments in technology, startups, cybersecurity, cloud computing, and breakthrough research from around the world.</p>
+            <h1 class="display-4">{{ _('home_hero_title') }}</h1>
+            <p class="lead">{{ _('home_hero_description') }}</p>
         </div>
         
         {% if articles %}
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Latest Articles</h2>
+            <h2>{{ _('home_latest_articles') }}</h2>
             <small class="text-muted">{{ articles|length }} recent articles</small>
         </div>
         {% else %}
         <div class="alert alert-info" role="alert">
-            <h4 class="alert-heading">Welcome to NextGen Technologies!</h4>
-            <p>No articles available yet. Click "Update Articles" to fetch the latest tech news and research papers.</p>
+            <h4 class="alert-heading">{{ _('home_welcome_title') }}</h4>
+            <p>{{ _('home_welcome_message') }}</p>
         </div>
-        <h2>Recent Articles</h2>
+        <h2>{{ _('home_recent_articles') }}</h2>
         {% endif %}
         {% for article in articles %}
         <div class="card mb-3">
@@ -30,12 +30,12 @@
                 <p class="card-text">{{ article.summary }}</p>
                 <div class="d-flex justify-content-between">
                     <div>
-                        <small class="text-muted">Source: {{ article.source_name }}</small>
+                        <small class="text-muted">{{ _('article_source') }}: {{ article.source_name }}</small>
                         {% if article.published_date %}
-                        <small class="text-muted">| Published: {{ article.published_date.strftime('%Y-%m-%d') }}</small>
+                        <small class="text-muted">| {{ _('article_published') }}: {{ article.published_date.strftime('%Y-%m-%d') }}</small>
                         {% endif %}
                     </div>
-                    <a href="{{ article.source_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Read More</a>
+                    <a href="{{ article.source_url }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ _('article_read_more') }}</a>
                 </div>
             </div>
         </div>
@@ -45,24 +45,34 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5>Quick Actions</h5>
+                <h5>{{ _('sidebar_quick_actions') }}</h5>
             </div>
             <div class="card-body">
-                <button class="btn btn-success btn-sm mb-2" onclick="triggerScraping()">Update Articles</button>
-                <p><small class="text-muted">Fetch latest tech news and research</small></p>
+                <button class="btn btn-success btn-sm mb-2" onclick="triggerScraping()">{{ _('sidebar_update_articles') }}</button>
+                <p><small class="text-muted">{{ _('sidebar_update_description') }}</small></p>
             </div>
         </div>
         
         <div class="card mt-3">
             <div class="card-header">
-                <h5>Browse by Category</h5>
+                <h5>{{ _('sidebar_browse_categories') }}</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     {% for category in categories %}
                     <div class="col-12 mb-2">
                         <a href="/category/{{ category }}" class="btn btn-outline-primary btn-sm w-100 text-start">
-                            <i class="bi bi-arrow-right-circle me-2"></i>{{ category }}
+                            <i class="bi bi-arrow-right-circle me-2"></i>
+                            {% if category == 'AI' %}{{ _('category_ai') }}
+                            {% elif category == 'Quantum Computing' %}{{ _('category_quantum') }}
+                            {% elif category == 'Defence Tech' %}{{ _('category_defence') }}
+                            {% elif category == 'Space Tech' %}{{ _('category_space') }}
+                            {% elif category == 'Renewable Energy' %}{{ _('category_renewable') }}
+                            {% elif category == 'Cloud Computing' %}{{ _('category_cloud') }}
+                            {% elif category == 'Cybersecurity' %}{{ _('category_cybersecurity') }}
+                            {% elif category == 'Start-ups' %}{{ _('category_startups') }}
+                            {% elif category == 'Tech News' %}{{ _('category_technews') }}
+                            {% else %}{{ category }}{% endif %}
                         </a>
                     </div>
                     {% endfor %}
@@ -72,13 +82,10 @@
         
         <div class="card mt-3">
             <div class="card-header">
-                <h5>About</h5>
+                <h5>{{ _('sidebar_about') }}</h5>
             </div>
             <div class="card-body">
-                <p class="small text-muted">
-                    NextGen Technologies brings you the latest developments in AI, quantum computing, cybersecurity, 
-                    cloud technology, startup news, and more. Stay ahead with cutting-edge research and industry insights.
-                </p>
+                <p class="small text-muted">{{ _('sidebar_about_description') }}</p>
             </div>
         </div>
     </div>

@@ -1,0 +1,81 @@
+{
+    "site_title": "NextGen Technologies Portal",
+    "site_description": "Latest technology news and research",
+    
+    "nav_home": "Home",
+    "nav_about": "About",
+    "nav_ai": "AI",
+    "nav_startups": "Start-ups",
+    "nav_how_it_works": "How it Works",
+    "nav_contact": "Contact",
+    
+    "home_hero_title": "Latest Tech News & Research",
+    "home_hero_description": "Discover cutting-edge developments in technology, startups, cybersecurity, cloud computing, and breakthrough research from around the world.",
+    "home_latest_articles": "Latest Articles",
+    "home_welcome_title": "Welcome to NextGen Technologies!",
+    "home_welcome_message": "No articles available yet. Click \"Update Articles\" to fetch the latest tech news and research papers.",
+    "home_recent_articles": "Recent Articles",
+    
+    "sidebar_quick_actions": "Quick Actions",
+    "sidebar_update_articles": "Update Articles",
+    "sidebar_update_description": "Fetch latest tech news and research",
+    "sidebar_browse_categories": "Browse by Category",
+    "sidebar_about": "About",
+    "sidebar_about_description": "NextGen Technologies brings you the latest developments in AI, quantum computing, cybersecurity, cloud technology, startup news, and more. Stay ahead with cutting-edge research and industry insights.",
+    
+    "category_ai": "AI",
+    "category_quantum": "Quantum Computing",
+    "category_defence": "Defence Tech",
+    "category_space": "Space Tech",
+    "category_renewable": "Renewable Energy",
+    "category_cloud": "Cloud Computing",
+    "category_cybersecurity": "Cybersecurity",
+    "category_startups": "Start-ups",
+    "category_technews": "Tech News",
+    
+    "article_read_more": "Read More",
+    "article_source": "Source",
+    "article_published": "Published",
+    "article_category": "Category",
+    
+    "about_title": "About NextGen Technologies",
+    "about_hero_subtitle": "Bridging the gap between cutting-edge technology and global communities through intelligent news aggregation and multilingual accessibility.",
+    "about_badge_multilingual": "🌐 Multilingual",
+    "about_badge_ai_powered": "🤖 AI-Powered",
+    "about_badge_realtime": "⚡ Real-time",
+    
+    "about_mission_title": "Our Mission",
+    "about_mission_description": "NextGen Technologies Portal is dedicated to democratizing access to technological knowledge. We aggregate content from leading research institutions, tech news sources, and innovation hubs to keep you informed about the rapidly evolving world of technology, with special focus on making this knowledge accessible to Telugu-speaking communities.",
+    
+    "about_coverage_title": "What We Cover",
+    "about_telugu_title": "🌐 For Telugu Audiences",
+    "about_telugu_subtitle": "Breaking language barriers in technology education and awareness.",
+    "about_telugu_description": "We understand the importance of making technology accessible to everyone. That's why NextGen Technologies Portal will soon offer content in Telugu, ensuring that tech enthusiasts and professionals in Telugu-speaking regions can stay updated with global technological developments in their preferred language.",
+    
+    "stats_tech_categories": "Tech Categories",
+    "stats_update_cycle": "Update Cycle",
+    "stats_sources": "Sources:",
+    "stats_languages": "Languages:",
+    "stats_research_papers": "Research Papers",
+    "stats_tech_news": "Tech News",
+    "stats_startups": "Startups",
+    "stats_english": "English",
+    "stats_telugu_soon": "Telugu (Soon)",
+    
+    "quick_links_title": "🔗 Quick Links",
+    "quick_links_how_it_works": "How it Works",
+    "quick_links_contact": "Contact Us",
+    "quick_links_ai_news": "Browse AI News",
+    "quick_links_startup_news": "Startup News",
+    
+    "mission_highlight_title": "Global Tech, Local Language",
+    "mission_highlight_description": "Making cutting-edge technology accessible to Telugu-speaking communities worldwide.",
+    "mission_highlight_quote": "\"Technology knows no boundaries, neither should language.\"",
+    
+    "footer_copyright": "© 2024 NextGen Technologies Portal. Latest tech advances and research.",
+    "footer_powered_by": "Powered by AI-driven content aggregation",
+    
+    "language_selector": "Select Language",
+    "language_english": "English",
+    "language_telugu": "తెలుగు"
+}
