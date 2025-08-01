@@ -3,7 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost/nextgen_tech"
+    DATABASE_URL: str = "sqlite:///./nextgen_tech.db"
     
     # Application
     APP_NAME: str = "NextGen Technologies Portal"
@@ -21,7 +21,11 @@ class Settings(BaseSettings):
         "Quantum Computing", 
         "Defence Tech",
         "Space Tech",
-        "Renewable Energy"
+        "Renewable Energy",
+        "Cloud Computing",
+        "Cybersecurity",
+        "Start-ups",
+        "Tech News"
     ]
     
     class Config:

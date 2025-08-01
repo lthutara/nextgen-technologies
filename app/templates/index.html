@@ -3,24 +3,23 @@
 {% block content %}
 <div class="row">
     <div class="col-md-8">
-        <h1>Latest Technology Advances</h1>
-        <p class="lead">Stay updated with cutting-edge research and developments in AI, Quantum Computing, Defence Tech, Space Technology, and Renewable Energy.</p>
-        
-        <div class="row mb-4">
-            {% for category in categories %}
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ category }}</h5>
-                        <p class="card-text">Latest research and developments in {{ category.lower() }}.</p>
-                        <a href="/category/{{ category }}" class="btn btn-primary">View Articles</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        <div class="hero-section mb-5">
+            <h1 class="display-4">Latest Tech News & Research</h1>
+            <p class="lead">Discover cutting-edge developments in technology, startups, cybersecurity, cloud computing, and breakthrough research from around the world.</p>
         </div>
         
+        {% if articles %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Latest Articles</h2>
+            <small class="text-muted">{{ articles|length }} recent articles</small>
+        </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">Welcome to NextGen Technologies!</h4>
+            <p>No articles available yet. Click "Update Articles" to fetch the latest tech news and research papers.</p>
+        </div>
         <h2>Recent Articles</h2>
+        {% endif %}
         {% for article in articles %}
         <div class="card mb-3">
             <div class="card-body">
@@ -50,18 +49,36 @@
             </div>
             <div class="card-body">
                 <button class="btn btn-success btn-sm mb-2" onclick="triggerScraping()">Update Articles</button>
-                <p><small class="text-muted">Fetch latest articles from all sources</small></p>
+                <p><small class="text-muted">Fetch latest tech news and research</small></p>
             </div>
         </div>
         
         <div class="card mt-3">
             <div class="card-header">
-                <h5>Categories</h5>
+                <h5>Browse by Category</h5>
             </div>
             <div class="card-body">
-                {% for category in categories %}
-                <a href="/category/{{ category }}" class="btn btn-outline-secondary btn-sm me-2 mb-2">{{ category }}</a>
-                {% endfor %}
+                <div class="row">
+                    {% for category in categories %}
+                    <div class="col-12 mb-2">
+                        <a href="/category/{{ category }}" class="btn btn-outline-primary btn-sm w-100 text-start">
+                            <i class="bi bi-arrow-right-circle me-2"></i>{{ category }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>About</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    NextGen Technologies brings you the latest developments in AI, quantum computing, cybersecurity, 
+                    cloud technology, startup news, and more. Stay ahead with cutting-edge research and industry insights.
+                </p>
             </div>
         </div>
     </div>

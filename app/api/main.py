@@ -43,6 +43,27 @@ async def category_page(category: str, request: Request, db: Session = Depends(g
         "categories": settings.TECH_CATEGORIES
     })
 
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {
+        "request": request,
+        "categories": settings.TECH_CATEGORIES
+    })
+
+@app.get("/how-it-works", response_class=HTMLResponse)
+async def how_it_works_page(request: Request):
+    return templates.TemplateResponse("how_it_works.html", {
+        "request": request,
+        "categories": settings.TECH_CATEGORIES
+    })
+
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_page(request: Request):
+    return templates.TemplateResponse("contact.html", {
+        "request": request,
+        "categories": settings.TECH_CATEGORIES
+    })
+
 @app.get("/api/articles")
 async def get_articles(
     category: Optional[str] = None,

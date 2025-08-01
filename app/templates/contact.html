@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - NextGen Technologies Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="display-4">Contact Us</h1>
+        <p class="lead">Get in touch with the NextGen Technologies team.</p>
+        
+        <div class="mb-5">
+            <h2>We'd Love to Hear From You</h2>
+            <p>Whether you have questions, suggestions, or want to contribute to our platform, we're here to help. Our team is passionate about making technology accessible to everyone, especially our Telugu-speaking community.</p>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">📧 General Inquiries</h5>
+                        <p class="card-text">Questions about our content, platform, or services</p>
+                        <a href="mailto:info@nextgentech.portal" class="btn btn-outline-primary">info@nextgentech.portal</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">🔧 Technical Support</h5>
+                        <p class="card-text">Issues with the website or API access</p>
+                        <a href="mailto:support@nextgentech.portal" class="btn btn-outline-primary">support@nextgentech.portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">📰 Content Suggestions</h5>
+                        <p class="card-text">Suggest new sources or report content issues</p>
+                        <a href="mailto:content@nextgentech.portal" class="btn btn-outline-primary">content@nextgentech.portal</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">🤝 Partnership</h5>
+                        <p class="card-text">Collaborate with us or advertise your tech solutions</p>
+                        <a href="mailto:partnerships@nextgentech.portal" class="btn btn-outline-primary">partnerships@nextgentech.portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-5">
+            <h2>Frequently Asked Questions</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            When will Telugu language support be available?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We're actively working on Telugu language support and expect to launch it in the coming months. This will include UI translation and content summaries in Telugu.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            How often is content updated?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Our automated system scrapes new content every 24 hours. You can also manually trigger updates using the "Update Articles" button on the homepage.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            Can I suggest new sources or categories?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Absolutely! We welcome suggestions for new tech news sources, research repositories, or content categories. Please email us at content@nextgentech.portal with your ideas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Contact</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select class="form-select" id="subject" required>
+                            <option value="">Select a topic</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="content">Content Suggestion</option>
+                            <option value="partnership">Partnership</option>
+                            <option value="telugu">Telugu Language Support</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Response Time</h5>
+            </div>
+            <div class="card-body">
+                <p><small class="text-muted">We typically respond to inquiries within 24-48 hours. For urgent technical issues, please use our support email for faster assistance.</small></p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Community</h5>
+            </div>
+            <div class="card-body">
+                <p><small class="text-muted">Join our growing community of tech enthusiasts and stay updated with the latest developments in technology and innovation.</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

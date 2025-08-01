@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}How it Works - NextGen Technologies Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="display-4">How it Works</h1>
+        <p class="lead">Discover the technology behind NextGen Technologies Portal.</p>
+        
+        <div class="mb-5">
+            <h2>🔍 Content Discovery</h2>
+            <p>Our system automatically scans multiple sources for the latest technology news and research:</p>
+            <ul>
+                <li><strong>arXiv.org:</strong> Latest research papers in AI, quantum computing, and more</li>
+                <li><strong>Tech News Sites:</strong> Breaking news from leading technology publications</li>
+                <li><strong>Research Institutions:</strong> Direct feeds from universities and research labs</li>
+                <li><strong>Startup Databases:</strong> Funding news and company announcements</li>
+            </ul>
+        </div>
+        
+        <div class="mb-5">
+            <h2>🤖 Intelligent Processing</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Automated Scraping</h5>
+                    <p>Web scrapers built with Python collect articles every 24 hours using BeautifulSoup, Scrapy, and Selenium.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Content Categorization</h5>
+                    <p>Articles are automatically categorized into our 9 tech domains using keyword analysis and content classification.</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h5>Duplicate Detection</h5>
+                    <p>Our system prevents duplicate articles by checking URLs and content similarity.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Quality Filtering</h5>
+                    <p>Only high-quality, relevant content makes it to our platform through automated filtering.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-5">
+            <h2>🏗️ Technology Stack</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Backend</h5>
+                    <ul>
+                        <li>FastAPI (Python web framework)</li>
+                        <li>SQLAlchemy (Database ORM)</li>
+                        <li>APScheduler (Task scheduling)</li>
+                        <li>PostgreSQL/SQLite (Database)</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Frontend</h5>
+                    <ul>
+                        <li>Bootstrap 5 (Responsive design)</li>
+                        <li>Jinja2 (Template engine)</li>
+                        <li>HTML/CSS/JavaScript</li>
+                        <li>Mobile-first approach</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-5">
+            <h2>🌍 Multilingual Support</h2>
+            <p>We're working on making technology accessible to Telugu-speaking audiences:</p>
+            <ul>
+                <li><strong>Interface Translation:</strong> Full UI available in Telugu</li>
+                <li><strong>Content Summary:</strong> Key insights translated to Telugu</li>
+                <li><strong>Smart Detection:</strong> Automatic language preference detection</li>
+                <li><strong>Cultural Context:</strong> Technology news relevant to Indian markets</li>
+            </ul>
+        </div>
+        
+        <div class="mb-5">
+            <h2>⚡ Real-time Updates</h2>
+            <p>Stay current with our automated update system:</p>
+            <ul>
+                <li>Articles scraped every 24 hours</li>
+                <li>Manual refresh option available</li>
+                <li>Real-time categorization and filtering</li>
+                <li>Instant web interface updates</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>System Status</h5>
+            </div>
+            <div class="card-body">
+                <p><span class="badge bg-success">Active</span> Content Scraping</p>
+                <p><span class="badge bg-success">Online</span> Web Interface</p>
+                <p><span class="badge bg-warning">Development</span> Telugu Support</p>
+                <p><span class="badge bg-info">Planning</span> Mobile App</p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>API Access</h5>
+            </div>
+            <div class="card-body">
+                <p>Developers can access our content via REST API:</p>
+                <ul class="small">
+                    <li><code>GET /api/articles</code></li>
+                    <li><code>GET /api/articles?category=AI</code></li>
+                    <li><code>GET /api/logs</code></li>
+                    <li><code>POST /api/scrape</code></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Open Source</h5>
+            </div>
+            <div class="card-body">
+                <p class="small">NextGen Technologies Portal is built with open-source technologies and follows modern web development best practices.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

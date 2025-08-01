@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}About - NextGen Technologies Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="display-4">About NextGen Technologies</h1>
+        <p class="lead">Your gateway to the latest technological advances and breakthrough research.</p>
+        
+        <div class="mb-5">
+            <h2>Our Mission</h2>
+            <p>NextGen Technologies Portal is dedicated to bringing you the most recent and significant developments in technology. We aggregate content from leading research institutions, tech news sources, and innovation hubs to keep you informed about the rapidly evolving world of technology.</p>
+        </div>
+        
+        <div class="mb-5">
+            <h2>What We Cover</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🤖 Artificial Intelligence</h5>
+                    <p>Latest breakthroughs in machine learning, deep learning, and AI applications across industries.</p>
+                    
+                    <h5>🚀 Start-ups</h5>
+                    <p>Emerging companies, funding news, and innovative solutions from the startup ecosystem.</p>
+                    
+                    <h5>🛡️ Cybersecurity</h5>
+                    <p>Security threats, protection technologies, and best practices for digital safety.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>☁️ Cloud Computing</h5>
+                    <p>Cloud technologies, serverless computing, and distributed systems innovations.</p>
+                    
+                    <h5>⚛️ Quantum Computing</h5>
+                    <p>Quantum research, computing advances, and potential applications.</p>
+                    
+                    <h5>🌱 Renewable Energy</h5>
+                    <p>Clean energy technologies, sustainability innovations, and green tech solutions.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-5">
+            <h2>For Telugu Audiences</h2>
+            <p>We understand the importance of making technology accessible to everyone. That's why NextGen Technologies Portal will soon offer content in Telugu, ensuring that tech enthusiasts and professionals in Telugu-speaking regions can stay updated with global technological developments in their preferred language.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Categories Covered:</strong> {{ categories|length }}</p>
+                <p><strong>Update Frequency:</strong> Every 24 hours</p>
+                <p><strong>Sources:</strong> Research papers, tech news, startups</p>
+                <p><strong>Languages:</strong> English (Telugu coming soon)</p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Stay Connected</h5>
+            </div>
+            <div class="card-body">
+                <p>Want to suggest a source or provide feedback? Visit our <a href="/contact">Contact</a> page.</p>
+                <p>Learn more about our technology on the <a href="/how-it-works">How it Works</a> page.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
