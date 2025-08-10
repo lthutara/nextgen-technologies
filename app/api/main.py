@@ -133,23 +133,18 @@ async def get_articles(
         ]
     }
 
+from app.scheduler import ArticleScheduler
+
+# Initialize scheduler
+scheduler = ArticleScheduler()
+
 @app.post("/api/scrape")
 async def trigger_scraping(category: Optional[str] = None):
-    scraper_manager = ScraperManager()
+    if category and category not in settings.TECH_CATEGORIES:
+        raise HTTPException(status_code=400, detail="Invalid category")
     
-    if category:
-        if category not in settings.TECH_CATEGORIES:
-            raise HTTPException(status_code=400, detail="Invalid category")
-        
-        db = next(get_db())
-        try:
-            result = scraper_manager.scrape_category(category, db)
-            return {"success": True, "result": result}
-        finally:
-            db.close()
-    else:
-        results = scraper_manager.scrape_all_categories()
-        return {"success": True, "results": results}
+    results = scheduler.scrape_job(category=category)
+    return {"success": True, "results": results}
 
 @app.get("/api/logs")
 async def get_scraping_logs(db: Session = Depends(get_db)):

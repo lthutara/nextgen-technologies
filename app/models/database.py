@@ -8,7 +8,7 @@ Base = declarative_base()
 
 class Article(Base):
     __tablename__ = "articles"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False, index=True)
     content = Column(Text)
@@ -19,13 +19,13 @@ class Article(Base):
     published_date = Column(DateTime)
     scraped_date = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
-    
+
     def __repr__(self):
         return f"<Article(title='{self.title}', category='{self.category}')>"
 
 class ScrapingLog(Base):
     __tablename__ = "scraping_logs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     source_name = Column(String, nullable=False)
     category = Column(String, nullable=False)

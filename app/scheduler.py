@@ -12,11 +12,16 @@ class ArticleScheduler:
         self.scheduler = BackgroundScheduler()
         self.scraper_manager = ScraperManager()
         
-    def scrape_job(self):
+    def scrape_job(self, category: str = None):
         """Scheduled job to scrape articles"""
         try:
-            logger.info("Starting scheduled article scraping...")
-            results = self.scraper_manager.scrape_all_categories()
+            logger.info(f"Starting scheduled article scraping for category: {category if category else 'All'}...")
+            if category:
+                db = next(get_db())
+                results = [self.scraper_manager.scrape_category(category, db)]
+                db.close()
+            else:
+                results = self.scraper_manager.scrape_all_categories()
             
             total_new = sum(result['total_new'] for result in results)
             logger.info(f"Scheduled scraping completed. {total_new} new articles found.")
