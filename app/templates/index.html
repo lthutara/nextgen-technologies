@@ -35,7 +35,7 @@
                         <small class="text-muted">| {{ _('article_published') }}: {{ article.published_date.strftime('%Y-%m-%d') }}</small>
                         {% endif %}
                     </div>
-                    <a href="{{ article.source_url }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ _('article_read_more') }}</a>
+                    <a href="/article/{{ article.id }}" class="btn btn-sm btn-outline-primary">{{ _('article_read_more') }}</a>
                 </div>
             </div>
         </div>

@@ -31,7 +31,28 @@ Once we have links from RSS feeds, we need a way to get the full article content
     - [ ] Develop a utility function that takes a URL and uses `requests` and `BeautifulSoup` to extract the main article title and body.
     - [ ] This will replace the current behavior of using the summary as the content.
 
+## Priority 4: Systematic Feed Testing and Categorization
+
+Our goal is to ensure all configured RSS feeds are working as expected and to categorize problematic ones.
+
+- [ ] **Refactor Test Scripts:**
+    - [ ] Modify individual category test scripts (e.g., `tests/test_ai_scrape.py`) to:
+        - Focus on logging the success/failure of *each individual article's content extraction* from *each feed*.
+        - Save the content of *all* successfully extracted articles to separate files for inspection (e.g., `ai_article_1.txt`).
+- [ ] **Systematically Test Each Category:**
+    - [ ] For each category (AI, Quantum Computing, Defence Tech, Space Tech, Renewable Energy, Cloud Computing, Cybersecurity, Start-ups, Tech News):
+        - Run its dedicated test script.
+        - Analyze the detailed logs for each feed.
+        - Inspect the saved article files to verify content.
+- [ ] **Categorize Feeds:** Based on testing, categorize each feed as:
+    - **Working:** Successfully extracts content.
+    - **Problematic (Access Issue):** Fails with 403 or similar access errors.
+    - **Problematic (No Content/Empty Feed):** Feed is parsed but yields no entries or empty content.
+    - **Outdated:** Feed provides entries, but content is old/irrelevant.
+- [ ] **Update `config/settings.py`:** Remove problematic feeds and potentially search for better alternatives.
+
 ## Future Ideas (Post-MVP)
 
+- [ ] **Implement article summarization:** Generate concise summaries from full article content.
 - [ ] **YouTube Summarization:** Explore implementing the YouTube video summarization feature.
 - [ ] **Email Newsletters:** Re-evaluate the email newsletter connector with strict security protocols.

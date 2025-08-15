@@ -103,6 +103,17 @@ async def contact_page(request: Request, lang: str = Cookie(None)):
     context = get_template_context(request, language)
     return templates.TemplateResponse("contact.html", context)
 
+@app.get("/article/{article_id}", response_class=HTMLResponse)
+async def article_page(article_id: int, request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
+    language = get_user_language(request, lang)
+    article = db.query(Article).filter(Article.id == article_id, Article.is_active == True).first()
+    
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    context = get_template_context(request, language, article=article)
+    return templates.TemplateResponse("article.html", context)
+
 @app.get("/api/articles")
 async def get_articles(
     category: Optional[str] = None,
@@ -123,6 +134,7 @@ async def get_articles(
                 "id": article.id,
                 "title": article.title,
                 "summary": article.summary,
+                "content": article.content,
                 "source_url": article.source_url,
                 "source_name": article.source_name,
                 "category": article.category,

@@ -41,3 +41,9 @@ nextgen_tech.db
 # Other
 cookies.txt
 headers.txt
+
+# Generated article files
+ai_article_*.txt
+
+# Local test scripts (temporary)
+delete_ai_articles.py

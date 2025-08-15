@@ -3,6 +3,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from app.scraping.scraper_manager import ScraperManager
 from config.settings import settings
 import logging
+from app.models.database import get_db # Add this line
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
