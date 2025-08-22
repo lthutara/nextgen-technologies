@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Mapped, mapped_column
 from datetime import datetime
+from typing import Optional
+from sqlalchemy.sql import func
 from config.settings import settings
 
 Base = declarative_base()
@@ -23,6 +25,21 @@ class Article(Base):
     def __repr__(self):
         return f"<Article(title='{self.title}', category='{self.category}')>"
 
+
+class RawArticle(Base):
+    __tablename__ = "raw_articles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String, index=True)
+    content: Mapped[str] = mapped_column(Text)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source_url: Mapped[str] = mapped_column(String, unique=True, index=True)
+    source_name: Mapped[str] = mapped_column(String)
+    category: Mapped[str] = mapped_column(String, index=True)
+    published_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    scraped_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+
+
 class ScrapingLog(Base):
     __tablename__ = "scraping_logs"
 
@@ -35,6 +52,7 @@ class ScrapingLog(Base):
     error_message = Column(Text)
     started_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime)
+
 
 # Database setup
 engine = create_engine(settings.DATABASE_URL)

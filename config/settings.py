@@ -28,6 +28,23 @@ class Settings(BaseSettings):
         "Tech News"
     ]
 
+    ARXIV_CATEGORIES: list = [
+        "AI",
+        "Quantum Computing"
+    ]
+
+    CATEGORY_CONNECTORS: dict = {
+        "AI": ["RSS", "arXiv"],
+        "Quantum Computing": ["RSS", "arXiv"],
+        "Defence Tech": ["RSS"],
+        "Space Tech": ["RSS"],
+        "Renewable Energy": ["RSS"],
+        "Cloud Computing": ["RSS"],
+        "Cybersecurity": ["RSS"],
+        "Start-ups": ["RSS"],
+        "Tech News": ["RSS"]
+    }
+
     RSS_FEEDS: dict = {
         "AI": [
             "https://research.google/blog/rss",
