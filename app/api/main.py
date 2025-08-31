@@ -4,10 +4,26 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.models.database import Article, ScrapingLog, get_db, create_tables
+from app.models.database import Article, RawArticle, ScrapingLog, get_db, create_tables
 from app.scraping.scraper_manager import ScraperManager
 from app.i18n import i18n_manager, get_text
 from config.settings import settings
+from pydantic import BaseModel # Added
+from datetime import datetime # Added for Pydantic model
+
+class RawArticleResponse(BaseModel): # Added
+    id: int
+    title: str
+    content: str
+    summary: Optional[str]
+    source_url: str
+    source_name: str
+    category: str
+    published_date: Optional[datetime]
+    scraped_date: datetime
+
+    class Config:
+        from_attributes = True
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
@@ -114,6 +130,12 @@ async def article_page(article_id: int, request: Request, db: Session = Depends(
     context = get_template_context(request, language, article=article)
     return templates.TemplateResponse("article.html", context)
 
+@app.get("/curation", response_class=HTMLResponse) # New endpoint for curation UI
+async def curation_page(request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
+    language = get_user_language(request, lang)
+    context = get_template_context(request, language)
+    return templates.TemplateResponse("curation.html", context)
+
 @app.get("/api/articles")
 async def get_articles(
     category: Optional[str] = None,
@@ -144,6 +166,47 @@ async def get_articles(
             for article in articles
         ]
     }
+
+@app.get("/api/raw_articles", response_model=List[RawArticleResponse]) # New endpoint
+async def get_raw_articles(
+    limit: int = 20,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
+    raw_articles = db.query(RawArticle).order_by(RawArticle.scraped_date.desc()).offset(offset).limit(limit).all()
+    return raw_articles
+
+@app.post("/api/raw_articles/{article_id}/approve") # New endpoint for approving raw articles
+async def approve_raw_article(article_id: int, db: Session = Depends(get_db)):
+    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not raw_article:
+        raise HTTPException(status_code=404, detail="Raw article not found")
+
+    # Create a new Article from RawArticle data
+    article = Article(
+        title=raw_article.title,
+        content=raw_article.content,
+        summary=raw_article.summary,
+        source_url=raw_article.source_url,
+        source_name=raw_article.source_name,
+        category=raw_article.category,
+        published_date=raw_article.published_date,
+        scraped_date=raw_article.scraped_date
+    )
+    db.add(article)
+    db.delete(raw_article) # Delete raw article after approval
+    db.commit()
+    return {"success": True, "message": "Raw article approved and moved to articles!"}
+
+@app.post("/api/raw_articles/{article_id}/reject") # New endpoint for rejecting raw articles
+async def reject_raw_article(article_id: int, db: Session = Depends(get_db)):
+    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not raw_article:
+        raise HTTPException(status_code=404, detail="Raw article not found")
+
+    db.delete(raw_article) # Delete raw article
+    db.commit()
+    return {"success": True, "message": "Raw article rejected!"}
 
 from app.scheduler import ArticleScheduler
 

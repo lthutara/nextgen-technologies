@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Curation") }} - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ _("Raw Articles for Curation") }}</h1>
+
+    <div id="raw-articles-list" class="row">
+        <!-- Raw articles will be loaded here by JavaScript -->
+        <p>{{ _("Loading raw articles...") }}</p>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <button id="load-more-btn" class="btn btn-primary">{{ _("Load More") }}</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const articlesList = document.getElementById('raw-articles-list');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        let offset = 0;
+        const limit = 20;
+
+        async function fetchRawArticles() {
+            try {
+                const response = await fetch(`/api/raw_articles?limit=${limit}&offset=${offset}`);
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    loadMoreBtn.style.display = 'none';
+                    if (offset === 0) {
+                        articlesList.innerHTML = '<p>{{ _("No raw articles to display.") }}</p>';
+                    }
+                    return;
+                }
+
+                // Clear "Loading articles..." message on initial load
+                if (offset === 0) {
+                    articlesList.innerHTML = '';
+                }
+
+                articlesList.innerHTML = '<h2>Test: Articles should appear here!</h2>';
+                offset += limit;
+
+                // Add event listeners for approve/reject buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.onclick = (event) => handleAction(event.target.dataset.id, 'approve');
+                });
+                document.querySelectorAll('.reject-btn').forEach(button => {
+                    button.onclick = (event) => handleAction(event.target.dataset.id, 'reject');
+                });
+
+            } catch (error) {
+                console.error('Error fetching raw articles:', error);
+                articlesList.innerHTML = '<p class="text-danger">{{ _("Failed to load articles.") }}</p>';
+            }
+        }
+
+        async function handleAction(articleId, action) {
+            console.log(`${action} article with ID: ${articleId}`);
+            try {
+                const response = await fetch(`/api/raw_articles/${articleId}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(`Article ${articleId} ${action}d successfully!`);
+                    // Remove the card from the UI
+                    const cardToRemove = document.querySelector(`.approve-btn[data-id="${articleId}"]`).closest('.col-md-6');
+                    if (cardToRemove) {
+                        cardToRemove.remove();
+                    }
+                } else {
+                    alert(`Failed to ${action} article ${articleId}: ${result.message}`);
+                }
+            } catch (error) {
+                console.error(`Error ${action}ing article:`, error);
+                alert(`Error ${action}ing article ${articleId}.`);
+            }
+        }
+
+        loadMoreBtn.addEventListener('click', fetchRawArticles);
+
+        // Initial load
+        fetchRawArticles();
+    });
+</script>
+{% endblock %}

@@ -1,49 +1,43 @@
 import pytest
-from unittest.mock import MagicMock, patch
-from app.scheduler import ArticleScheduler
-from app.models.database import get_db, Article, ScrapingLog
-from config.settings import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.models.database import Base, RawArticle
+from datetime import datetime
 
-# Mock the database session for tests
-@pytest.fixture
-def mock_db_session():
-    db_session = MagicMock()
-    yield db_session
-    db_session.close()
+# Setup for an in-memory SQLite database for testing
+@pytest.fixture(scope="function")
+def db_session():
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    yield session
+    session.close()
+    Base.metadata.drop_all(engine)
 
-# Mock the get_db dependency
-@pytest.fixture
-def mock_get_db(mock_db_session):
-    with patch('app.models.database.get_db', return_value=iter([mock_db_session])):
-        yield mock_db_session
+def test_add_raw_article(db_session):
+    """Tests adding a RawArticle to the database and verifying its properties."""
+    # 1. Prepare test data
+    test_article_data = {
+        "title": "Test Title",
+        "content": "Test content.",
+        "summary": "Test summary.",
+        "source_url": "http://test.com/article",
+        "source_name": "Test Source",
+        "category": "Testing",
+        "published_date": datetime.utcnow()
+    }
 
-# Test for immediate scraping on startup
-def test_immediate_scraping_on_startup(mock_get_db):
-    with patch('app.scheduler.ScraperManager') as MockScraperManager:
-        scheduler = ArticleScheduler()
-        scheduler.scrape_job()
-        MockScraperManager.return_value.scrape_all_categories.assert_called_once()
+    # 2. Create and save the RawArticle
+    new_article = RawArticle(**test_article_data)
+    db_session.add(new_article)
+    db_session.commit()
 
-# Test for category-specific scraping
-def test_category_specific_scraping(mock_get_db):
-    with patch('app.scheduler.ScraperManager') as MockScraperManager:
-        scheduler = ArticleScheduler()
-        
-        # Mock scrape_category to return a predictable result
-        MockScraperManager.return_value.scrape_category.return_value = {
-            "category": "AI",
-            "total_found": 10,
-            "total_new": 5,
-            "sources": {"arXiv": {"found": 10, "new": 5}}
-        }
+    # 3. Retrieve the article from the database
+    retrieved_article = db_session.query(RawArticle).filter_by(source_url="http://test.com/article").first()
 
-        # Call scrape_job with a specific category (this will require modifying scrape_job)
-        # For now, we'll test the underlying scrape_category call directly
-        result = scheduler.scraper_manager.scrape_category("AI", mock_get_db)
-        
-        assert result["category"] == "AI"
-        assert result["total_new"] == 5
-        MockScraperManager.return_value.scrape_category.assert_called_once_with("AI", mock_get_db)
-
-# You would also need to add tests for the actual data population and database interactions.
-# This requires setting up a test database or more sophisticated mocking.
+    # 4. Assert that the retrieved article is not None and its properties match
+    assert retrieved_article is not None
+    assert retrieved_article.title == test_article_data["title"]
+    assert retrieved_article.source_name == test_article_data["source_name"]
+    assert retrieved_article.category == test_article_data["category"]

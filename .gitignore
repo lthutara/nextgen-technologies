@@ -46,4 +46,6 @@ headers.txt
 ai_article_*.txt
 
 # Local test scripts (temporary)
+delete_ai_articles.pyjournal.md
+temp_add_dummy_raw_article.py
 delete_ai_articles.py
