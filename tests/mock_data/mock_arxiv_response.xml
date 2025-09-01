@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>arXiv Search Results</title>
+  <entry>
+    <id>http://arxiv.org/abs/2308.08888</id>
+    <published>2023-08-17T15:30:00Z</published>
+    <title>Test Arxiv Article 1</title>
+    <summary>This is the summary for test arxiv article 1. It is a great paper.</summary>
+    <author><name>John Doe</name></author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2308.09999</id>
+    <published>2023-08-18T18:00:00Z</published>
+    <title>Test Arxiv Article 2</title>
+    <summary>This is the summary for test arxiv article 2. It is also a great paper.</summary>
+    <author><name>Jane Smith</name></author>
+  </entry>
+</feed>

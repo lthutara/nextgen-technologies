@@ -62,3 +62,5 @@ Once we have links from RSS feeds, we need a way to get the full article content
 - [ ] **Implement article summarization:** Generate concise summaries from full article content.
 - [ ] **YouTube Summarization:** Explore implementing the YouTube video summarization feature.
 - [ ] **Email Newsletters:** Re-evaluate the email newsletter connector with strict security protocols.
+- [ ] **Rename Category:** Change "Renewable Energy" to "EV and Renewable Energy" across the application (config, scrapers, templates).
+- [ ] **Content Differentiation:** Implement a mechanism to classify articles by type (e.g., 'in-depth article', 'news brief', 'research paper').

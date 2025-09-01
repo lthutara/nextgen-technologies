@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     
     # Scraping
     SCRAPING_INTERVAL_HOURS: int = 0.01 
-    MAX_ARTICLES_PER_SOURCE: int = 50
+    MAX_ARTICLES_PER_SOURCE: int = 10
     REQUEST_DELAY: float = 1.0
     
     # Categories
@@ -97,7 +97,11 @@ class Settings(BaseSettings):
             "https://schneier.com/blog/atom.xml",
             "https://isc.sans.edu/rssfeed.html",
             "https://www.csoonline.com/feed",
-            "https://www.bleepingcomputer.com/feed/"
+            "https://www.bleepingcomputer.com/feed/",
+            "https://www.crowdstrike.com/blog/feed/",
+            "https://www.paloaltonetworks.com/blog/feed/",
+            "https://www.mandiant.com/resources/blog/rss.xml",
+            "https://crypto.stanford.edu/rss.xml"
         ],
         "Start-ups": [
             "http://techcrunch.com/startups/feed/",

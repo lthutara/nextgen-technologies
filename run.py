@@ -20,7 +20,7 @@ if __name__ == "__main__":
     scheduler.start()
     
     # Run the FastAPI app
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")
 
     # Keep the main thread alive to allow the scheduler to run
     try:

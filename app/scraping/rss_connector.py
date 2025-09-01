@@ -10,7 +10,7 @@ class RSSConnector(BaseScraper):
         super().__init__("RSS", category)
         self.rss_feeds = rss_feeds
 
-    def scrape_articles(self, max_articles: int = None) -> List[ScrapedArticle]:
+    def fetch_articles(self, max_articles: int = None) -> List[ScrapedArticle]:
         max_articles_per_feed = (max_articles or settings.MAX_ARTICLES_PER_SOURCE) // len(self.rss_feeds)
         articles = []
 
@@ -23,8 +23,8 @@ class RSSConnector(BaseScraper):
 
                 article = ScrapedArticle(
                     title=entry.title,
-                    content=entry.summary,  # Using summary as content for now
-                    summary=entry.summary,
+                    content=entry.get('summary', ''),  # Using summary as content for now
+                    summary=entry.get('summary', ''),
                     source_url=entry.link,
                     source_name=self.source_name,
                     category=self.category,

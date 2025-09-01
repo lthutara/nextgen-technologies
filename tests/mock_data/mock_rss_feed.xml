@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Mock RSS Feed</title>
+  <description>A mock feed for testing the RSSConnector.</description>
+  <link>http://example.com</link>
+  <lastBuildDate>Mon, 01 Sep 2025 00:00:00 +0000</lastBuildDate>
+  <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>
+  <ttl>1800</ttl>
+
+  <item>
+    <title>Test Article 1</title>
+    <description>This is the summary for test article 1.</description>
+    <summary>This is the summary for test article 1.</summary>
+    <link>http://example.com/article1</link>
+    <guid isPermaLink="true">http://example.com/article1</guid>
+    <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>Test Article 2 (No Summary)</title>
+    <link>http://example.com/article2</link>
+    <guid isPermaLink="true">http://example.com/article2</guid>
+    <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>
