@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "NextGen Technologies Portal"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
+    GEMINI_API_KEY: Optional[str] = None
     
     # Scraping
     SCRAPING_INTERVAL_HOURS: int = 0.01 

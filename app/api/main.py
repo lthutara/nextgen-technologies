@@ -8,10 +8,40 @@ from app.models.database import Article, RawArticle, ScrapingLog, get_db, create
 from app.scraping.scraper_manager import ScraperManager
 from app.i18n import i18n_manager, get_text
 from config.settings import settings
-from pydantic import BaseModel # Added
-from datetime import datetime # Added for Pydantic model
+from pydantic import BaseModel
+from datetime import datetime
+from contextlib import asynccontextmanager
+from app.scheduler import ArticleScheduler
+from app.scraping.content_extractor import extract_article_content
+from app.services.summarizer import summarize_with_gemini
 
-class RawArticleResponse(BaseModel): # Added
+# --- Scheduler and Lifespan Management ---
+scheduler = ArticleScheduler()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage scheduler startup and shutdown."""
+    print("INFO:     Starting up application...")
+    
+    # Run a quick initial scrape on startup for faster development
+    print("INFO:     Running initial scrape for 'Tech News' category...")
+    try:
+        scheduler.scrape_job(category="Tech News")
+        print("INFO:     Initial scrape completed.")
+    except Exception as e:
+        print(f"ERROR:    Initial scrape failed: {e}")
+
+    # Start the scheduler for regular updates
+    print("INFO:     Starting scheduler for periodic updates...")
+    scheduler.start()
+    
+    yield
+    
+    # Shutdown
+    print("INFO:     Shutting down application and scheduler...")
+    scheduler.stop()
+
+class RawArticleResponse(BaseModel):
     id: int
     title: str
     content: str
@@ -25,7 +55,7 @@ class RawArticleResponse(BaseModel): # Added
     class Config:
         from_attributes = True
 
-app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
+app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=lifespan)
 
 # Static files and templates
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -208,10 +238,29 @@ async def reject_raw_article(article_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"success": True, "message": "Raw article rejected!"}
 
-from app.scheduler import ArticleScheduler
 
-# Initialize scheduler
-scheduler = ArticleScheduler()
+@app.post("/api/raw_articles/{article_id}/summarize")
+async def summarize_raw_article(article_id: int, db: Session = Depends(get_db)):
+    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not raw_article:
+        raise HTTPException(status_code=404, detail="Raw article not found")
+
+    # Step 1: Extract full content
+    full_content = extract_article_content(raw_article.source_url)
+    if not full_content:
+        raise HTTPException(status_code=500, detail="Failed to extract article content.")
+
+    # Step 2: Summarize the content
+    new_summary = summarize_with_gemini(full_content)
+    if new_summary.startswith("[Summarization failed"):
+        raise HTTPException(status_code=500, detail=new_summary)
+
+    # Step 3: Update the database
+    raw_article.summary = new_summary
+    db.commit()
+    db.refresh(raw_article)
+
+    return {"success": True, "message": "Article summarized successfully!", "new_summary": new_summary}
 
 @app.post("/api/scrape")
 async def trigger_scraping(category: Optional[str] = None):

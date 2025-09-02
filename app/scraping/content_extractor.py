@@ -2,60 +2,53 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def extract_article_content(url: str) -> tuple[str, str]:
+def extract_article_content(url: str) -> str:
     """
-    Extracts the main title and body content from a given URL.
+    Fetches the content from a URL and extracts the main article text.
     """
     try:
-        logger.info(f"Attempting to extract content from: {url}") # Added
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
-        logger.info(f"Successfully fetched {url}. Status: {response.status_code}") # Added
-        soup = BeautifulSoup(response.text, 'html.parser')
-        logger.info(f"Parsed HTML for {url}.") # Added
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status() # Raise an exception for bad status codes
 
-        title = soup.find('h1')
-        if title:
-            title = title.get_text(strip=True)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 1. Try to find the main <article> tag
+        article_tag = soup.find('article')
+        if article_tag:
+            text_container = article_tag
         else:
-            title = soup.find('title')
-            if title:
-                title = title.get_text(strip=True)
-            else:
-                title = "No Title Found"
-
-        # Attempt to find the main content based on common patterns
-        # This is a simplified approach and might need refinement for specific sites
-        content_tags = ['article', 'main', 'div', 'p']
-        main_content = []
-        
-        for tag_name in content_tags:
-            for tag in soup.find_all(tag_name):
-                # Heuristic: Look for tags with significant text content
-                text = tag.get_text(separator=' ', strip=True)
-                if len(text.split()) > 50:  # Arbitrary threshold for "main content"
-                    main_content.append(text)
+            # 2. As a fallback, look for common main content divs
+            main_content = (soup.find('main') or
+                           soup.find('div', id='main-content') or
+                           soup.find('div', class_='post-content') or
+                           soup.find('div', class_='article-body') or
+                           soup.find('div', id='content'))
             if main_content:
-                break # Stop after finding some content
+                text_container = main_content
+            else:
+                # 3. If all else fails, use the whole body
+                text_container = soup.body
 
-        if not main_content:
-            # Fallback: get all paragraph text
-            for p_tag in soup.find_all('p'):
-                text = p_tag.get_text(separator=' ', strip=True)
-                if text:
-                    main_content.append(text)
+        if not text_container:
+            logger.warning(f"Could not find a suitable text container for {url}")
+            return ""
 
-        full_content = "\n\n".join(main_content)
-        if not full_content:
-            full_content = "Could not extract main content."
-
-        return title, full_content
+        # Extract text from all paragraph tags within the container
+        paragraphs = text_container.find_all('p')
+        full_text = '\n'.join([p.get_text(strip=True) for p in paragraphs])
+        
+        logger.info(f"Successfully extracted content from {url}. Length: {len(full_text)} chars.")
+        return full_text
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed for {url}: {e}")
-        return "Error fetching content", f"Failed to fetch content from {url}: {e}"
+        logger.error(f"Failed to fetch URL {url}: {e}")
+        return ""
     except Exception as e:
-        logger.error(f"Error extracting content from {url}: {e}")
-        return "Error extracting content", f"An unexpected error occurred: {e}"
+        logger.error(f"An error occurred during content extraction for {url}: {e}")
+        return ""
