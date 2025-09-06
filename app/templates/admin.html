@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - {{ _('site_title') }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Admin Panel</h1>
+
+    <!-- Manual Scraping Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Manual Scraping</h2>
+        </div>
+        <div class="card-body">
+            <p>Click a category to start scraping articles for it.</p>
+            <div class="d-flex flex-wrap gap-2">
+                {% for category in tech_categories %}
+                <button class="btn btn-primary" onclick="scrapeCategory('{{ category }}')">{{ category }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Management Section -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Database Management</h2>
+        </div>
+        <div class="card-body">
+            <p>Clear all articles from the raw articles table.</p>
+            <button class="btn btn-danger" onclick="clearRawArticles()">Clear Raw Articles Table</button>
+        </div>
+    </div>
+
+    <!-- Message Container -->
+    <div id="message-container" class="mt-4"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function showMessage(message, type = 'success') {
+        const container = document.getElementById('message-container');
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        container.innerHTML = `<div class="alert ${alertClass}" role="alert">${message}</div>`;
+    }
+
+    async function scrapeCategory(category) {
+        try {
+            const response = await fetch(`/admin/scrape/${category}`, { method: 'POST' });
+            const result = await response.json();
+            if (response.ok) {
+                showMessage(`Scraping for '${category}' started successfully.`);
+            } else {
+                showMessage(`Error starting scraping for '${category}': ${result.detail}`, 'danger');
+            }
+        } catch (error) {
+            showMessage(`An unexpected error occurred: ${error}`, 'danger');
+        }
+    }
+
+    async function clearRawArticles() {
+        if (!confirm('Are you sure you want to clear the raw articles table? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/admin/clear_raw_articles', { method: 'POST' });
+            const result = await response.json();
+            if (response.ok) {
+                showMessage('Raw articles table cleared successfully.');
+            } else {
+                showMessage(`Error clearing raw articles table: ${result.detail}`, 'danger');
+            }
+        } catch (error) {
+            showMessage(`An unexpected error occurred: ${error}`, 'danger');
+        }
+    }
+</script>
+{% endblock %}
