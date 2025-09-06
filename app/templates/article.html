@@ -12,6 +12,18 @@
                 {{ _("Published") }}: {{ article.published_date.strftime('%Y-%m-%d %H:%M') }} |
                 {{ _("Category") }}: <a href="/category/{{ article.category }}">{{ article.category }}</a>
             </p>
+            
+            {% if article.image_url %}
+            <img src="{{ article.image_url }}" class="img-fluid rounded mb-4" alt="{{ article.title }}">
+            {% else %}
+            {% set placeholder_image = '/static/img/placeholder_general.jpg' %}
+            {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.jpg' %}
+            {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.jpg' %}
+            {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.jpg' %}
+            {% endif %}
+            <img src="{{ placeholder_image }}" class="img-fluid rounded mb-4" alt="Placeholder Image for {{ article.category }}">
+            {% endif %}
+
             <hr>
             <div class="article-content">
                 <p>{{ article.content | safe }}</p>

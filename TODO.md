@@ -19,6 +19,7 @@ Our main goal is to build a robust and reliable content pipeline using RSS feeds
 
 - [ ] **Curate RSS Feeds:**
     - [ ] Research and add more high-quality RSS feeds for all technology categories defined in `config/settings.py`.
+    - [ ] Investigate and debug 'Cybersecurity' RSS feeds.
 
 - [ ] **Test the Full Pipeline:**
     - [ ] Run the `scrape_all_categories()` function and verify that articles from RSS feeds are being correctly added to the database.
@@ -57,10 +58,14 @@ Once we have links from RSS feeds, we need a way to get the full article content
     - [ ] **Database:** Add a `status` column to the `Article` model (e.g., `pending_review`, `approved`, `rejected`).
     - [ ] **Scraper:** Ensure new articles are saved with the `pending_review` status by default.
     - [ ] **User API:** Update all user-facing queries to only `filter` for articles with `status == 'approved'`.
-    - [ ] **Admin UI:** Create a new `/admin` page to list all articles pending review.
+    - [x] **Admin UI:** Create a new `/admin` page to list all articles pending review. (Note: A simple version for triggering scrapes has been created. The full review UI is at `/curation`.)
     - [ ] **Admin API:** Create new endpoints to `approve` or `reject` articles, which will update their status in the database.
 - [ ] **Implement article summarization:** Generate concise summaries from full article content.
 - [ ] **YouTube Summarization:** Explore implementing the YouTube video summarization feature.
 - [ ] **Email Newsletters:** Re-evaluate the email newsletter connector with strict security protocols.
 - [ ] **Rename Category:** Change "Renewable Energy" to "EV and Renewable Energy" across the application (config, scrapers, templates).
 - [ ] **Content Differentiation:** Implement a mechanism to classify articles by type (e.g., 'in-depth article', 'news brief', 'research paper').
+
+## UI/UX Enhancements
+
+- [ ] **Hero Section Image Sourcing:** Implement logic to display a category-specific stock image (or a general stock image) in the hero section, instead of relying on images extracted from the latest article.

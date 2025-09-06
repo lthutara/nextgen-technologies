@@ -38,6 +38,7 @@ class RawArticle(Base):
     category: Mapped[str] = mapped_column(String, index=True)
     published_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     scraped_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    image_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
 
 class ScrapingLog(Base):

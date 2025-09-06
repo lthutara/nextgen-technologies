@@ -80,7 +80,8 @@ class ScraperManager:
                             source_url=article_data.source_url,
                             source_name=article_data.source_name,
                             category=article_data.category,
-                            published_date=article_data.published_date
+                            published_date=article_data.published_date,
+                            image_url=article_data.image_url
                         )
                         db.add(raw_article)
                         new_articles += 1

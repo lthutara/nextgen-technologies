@@ -16,6 +16,7 @@ class ScrapedArticle:
     source_name: str
     category: str
     published_date: Optional[datetime] = None
+    image_url: Optional[str] = None
 
 class BaseScraper(ABC):
     def __init__(self, source_name: str, category: str):

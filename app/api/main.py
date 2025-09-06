@@ -290,6 +290,40 @@ async def get_scraping_logs(db: Session = Depends(get_db)):
         ]
     }
 
+
+# --- Admin Panel ---
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page(request: Request, lang: str = Cookie(None)):
+    language = get_user_language(request, lang)
+    context = get_template_context(request, language, tech_categories=settings.TECH_CATEGORIES)
+    return templates.TemplateResponse("admin.html", context)
+
+
+@app.post("/admin/scrape/{category}")
+async def admin_scrape_category(category: str):
+    if category not in settings.TECH_CATEGORIES:
+        raise HTTPException(status_code=400, detail="Invalid category")
+    
+    try:
+        # Run in background?
+        scheduler.scrape_job(category=category)
+        return {"success": True, "message": f"Scraping for '{category}' started."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/clear_raw_articles")
+async def admin_clear_raw_articles(db: Session = Depends(get_db)):
+    try:
+        num_deleted = db.query(RawArticle).delete()
+        db.commit()
+        return {"success": True, "message": f"{num_deleted} raw articles deleted."}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
