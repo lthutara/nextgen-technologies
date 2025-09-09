@@ -4,31 +4,16 @@
 <div class="row">
     <div class="col-md-8">
         {# Featured Article Section #}
-        {% if articles %}
-            {% set featured_article = articles[0] %}
+        {% if latest_articles %}
+            {% set featured_article = latest_articles[0] %}
             <div class="card featured-article-card mb-5">
-                {% if featured_article.image_url %}
-                <img src="{{ featured_article.image_url }}" class="card-img-top" alt="{{ featured_article.title }}">
-                {% else %}
-                {% set placeholder_image = '/static/img/placeholder_general.jpg' %}
-                {% if featured_article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.jpg' %}
-                {% elif featured_article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.jpg' %}
-                {% elif featured_article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.jpg' %}
-                {% endif %}
-                <img src="{{ placeholder_image }}" class="card-img-top" alt="Placeholder Image for {{ featured_article.category }}">
-                {% endif %}
-                <div class="card-body">
-                    <h1 class="card-title display-5">{{ featured_article.title }}</h1>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <small class="text-muted">{{ _('article_source') }}: {{ featured_article.source_name }}</small>
-                            {% if featured_article.published_date %}
-                            <small class="text-muted">| {{ _('article_published') }}: {{ featured_article.published_date.strftime('%Y-%m-%d') }}</small>
-                            {% endif %}
-                        </div>
-                        <a href="/article/{{ featured_article.id }}" class="btn btn-primary">{{ _('article_read_more') }}</a>
+                <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">
+                    <img src="https://source.unsplash.com/random/1600x900/?technology" class="featured-article-image" alt="">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ featured_article.title }}</h2>
+                        <small class="text-muted">{{ _('article_source') }}: {{ featured_article.source_name }} | {{ _('article_read_more') }}</small>
                     </div>
-                </div>
+                </a>
             </div>
         {% else %}
             <div class="alert alert-info mb-5" role="alert">
@@ -40,32 +25,22 @@
         {# Latest Articles Section #}
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>{{ _('home_latest_articles') }}</h2>
-            <small class="text-muted">{{ articles|length }} recent articles</small>
+            <small class="text-muted">{{ latest_articles|length -1 }} recent articles</small>
         </div>
         <div class="row">
-            {% for article in articles[1:] %} {# Skip the first article as it's featured #}
-            <div class="col-md-6 mb-4"> {# Two columns on medium and larger screens #}
+            {% for article in latest_articles[1:9] %}
+            <div class="col-md-6 mb-4">
                 <div class="card article-card h-100">
-                    {% if article.image_url %}
-                    <img src="{{ article.image_url }}" class="card-img-top" alt="{{ article.title }}">
-                    {% else %}
-                    {% set placeholder_image = '/static/img/placeholder_general.jpg' %}
-                    {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.jpg' %}
-                    {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.jpg' %}
-                    {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.jpg' %}
-                    {% endif %}
-                    <img src="{{ placeholder_image }}" class="card-img-top" alt="Placeholder Image for {{ article.category }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
-                        </h5>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div>
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ article.image_url if article.image_url else '/static/img/placeholder_general.jpg' }}" class="img-fluid rounded-start latest-articles-img" alt="">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title truncate-text">
+                                    <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
+                                </h5>
                                 <small class="text-muted">{{ _('article_source') }}: {{ article.source_name }}</small>
-                                {% if article.published_date %}
-                                <small class="text-muted">| {{ _('article_published') }}: {{ article.published_date.strftime('%Y-%m-%d') }}</small>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -73,70 +48,25 @@
             </div>
             {% endfor %}
         </div>
-
-        {# Placeholder for Category-Specific Sections #}
-        <div class="mt-5">
-            <h2>{{ _('home_explore_categories') }}</h2>
-            <p class="lead">{{ _('home_explore_categories_description') }}</p>
-            {# Example: AI Articles #}
-            {#
-            <h3 class="mt-4">Artificial Intelligence</h3>
-            <div class="row">
-                {% for ai_article in ai_articles %}
-                <div class="col-md-4 mb-4">
-                    <div class="card article-card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ ai_article.title }}</h5>
-                            <p class="card-text">{{ ai_article.summary }}</p>
-                            <a href="/article/{{ ai_article.id }}" class="btn btn-sm btn-outline-primary">Read More</a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            #}
-        </div>
-
     </div>
     
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5>{{ _('sidebar_quick_actions') }}</h5>
+                <h5>{{ _('sidebar_top_stories') }}</h5>
             </div>
             <div class="card-body">
-                <button class="btn btn-success btn-sm mb-2" onclick="triggerScraping()">{{ _('sidebar_update_articles') }}</button>
-                <p><small class="text-muted">{{ _('sidebar_update_description') }}</small></p>
-            </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5>{{ _('sidebar_browse_categories') }}</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for category in categories %}
-                    <div class="col-12 mb-2">
-                        <a href="/category/{{ category }}" class="btn btn-outline-primary btn-sm w-100 text-start">
-                            <i class="bi bi-arrow-right-circle me-2"></i>
-                            {% if category == 'AI' %}{{ _('category_ai') }}
-                            {% elif category == 'Quantum Computing' %}{{ _('category_quantum') }}
-                            {% elif category == 'Defence Tech' %}{{ _('category_defence') }}
-                            {% elif category == 'Space Tech' %}{{ _('category_space') }}
-                            {% elif category == 'Renewable Energy' %}{{ _('category_renewable') }}
-                            {% elif category == 'Cloud Computing' %}{{ _('category_cloud') }}
-                            {% elif category == 'Cybersecurity' %}{{ _('category_cybersecurity') }}
-                            {% elif category == 'Start-ups' %}{{ _('category_startups') }}
-                            {% elif category == 'Tech News' %}{{ _('category_technews') }}
-                            {% else %}{{ category }}{% endif %}
-                        </a>
-                    </div>
-                    {% endfor %}
+                {% for article in top_stories %}
+                <div class="mb-3">
+                    <h6 class="card-title">
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
+                    </h6>
+                    <small class="text-muted">{{ article.source_name }}</small>
                 </div>
+                {% endfor %}
             </div>
         </div>
-        
+
         <div class="card mt-3">
             <div class="card-header">
                 <h5>{{ _('sidebar_about') }}</h5>

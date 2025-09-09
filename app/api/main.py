@@ -112,9 +112,26 @@ async def set_language(language: str, request: Request):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
     language = get_user_language(request, lang)
-    articles = db.query(Article).filter(Article.is_active == True).order_by(Article.scraped_date.desc()).limit(20).all()
     
-    context = get_template_context(request, language, articles=articles)
+    # Define categories for each section
+    latest_articles_categories = ["Start-ups", "Tech News"]
+    top_stories_categories = [
+        "AI", "Quantum Computing", "Defence Tech", "Space Tech", 
+        "Renewable Energy", "Cloud Computing", "Cybersecurity"
+    ]
+    
+    # Fetch articles for each section
+    latest_articles = db.query(Article).filter(
+        Article.is_active == True,
+        Article.category.in_(latest_articles_categories)
+    ).order_by(Article.scraped_date.desc()).limit(9).all()
+    
+    top_stories = db.query(Article).filter(
+        Article.is_active == True,
+        Article.category.in_(top_stories_categories)
+    ).order_by(Article.scraped_date.desc()).limit(8).all()
+    
+    context = get_template_context(request, language, latest_articles=latest_articles, top_stories=top_stories)
     return templates.TemplateResponse("index.html", context)
 
 @app.get("/category/{category}", response_class=HTMLResponse)
