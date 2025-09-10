@@ -68,4 +68,18 @@ Once we have links from RSS feeds, we need a way to get the full article content
 
 ## UI/UX Enhancements
 
+- [ ] **Improve Overall Color Theme:** Refine the website's color palette for a more cohesive and visually appealing experience.
+- [ ] **Add Images to Articles:** Integrate relevant images within article content to enhance visual engagement.
 - [ ] **Hero Section Image Sourcing:** Implement logic to display a category-specific stock image (or a general stock image) in the hero section, instead of relying on images extracted from the latest article.
+
+## New Priority Items (from user)
+
+- [ ] **Improve Curation Pipeline for Derived Content:**
+    - [ ] Re-create new articles from derived content, avoiding original terminology.
+    - [ ] Primary focus on Telugu version first.
+    - [ ] Add translation to the curation pipeline.
+- [ ] **Add More Connectors:**
+    - [ ] YouTube summary (content simplification with idea and key points).
+    - [ ] Research-type articles connector.
+    - [ ] "How it works" articles connector.
+    - [ ] Founder stories connector.
