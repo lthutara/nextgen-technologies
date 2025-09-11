@@ -1,6 +1,6 @@
 # NextGen Technologies Portal
 
-> A comprehensive technology news aggregation platform with multilingual support, focusing on making cutting-edge tech research accessible to global and Telugu-speaking communities.
+> A technology content analysis and creation platform that transforms English-language articles into high-quality, insightful content for Telugu-speaking audiences.
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
@@ -8,17 +8,23 @@
 
 ## 🚀 Overview
 
-NextGen Technologies Portal is an intelligent technology news aggregation platform that automatically scrapes, categorizes, and presents the latest technological advances from research papers, tech news sources, and startup databases. With a special focus on serving Telugu-speaking audiences, the platform bridges language barriers in technology knowledge sharing.
+NextGen Technologies Portal is a sophisticated content transformation platform designed to make technology accessible and understandable for Telugu-speaking audiences. Instead of simple aggregation, the platform uses a human-in-the-loop system, powered by AI, to analyze, dissect, and reconstruct English-language tech articles into new, insightful content in Telugu.
+
+Our unique workflow allows editors to classify content (e.g., as 'News' or 'Research'), perform a deep analysis to understand its core components, and then create fresh articles that deliver maximum value and clarity to our readers.
 
 ### ✨ Key Features
 
-- **🔄 Automated Content Aggregation**: 24/7 scraping from multiple tech sources
-- **🎯 Smart Categorization**: AI-powered content classification across 9 tech domains
-- **🌐 Multilingual Support**: English interface with Telugu translation capabilities
-- **📱 Responsive Design**: Mobile-first, clean user interface
-- **🔍 Advanced Filtering**: Category-based browsing and search
-- **📊 Real-time Updates**: Fresh content every 24 hours
-- **🛡️ Quality Control**: Duplicate detection and content validation
+- **✍️ Advanced Content Creation**: A human-in-the-loop workflow for transforming raw articles into new, high-value content in Telugu.
+- **🧠 AI-Powered Analysis**: Employs AI to dissect articles into structured insights (e.g., 'What is it?', 'What's new?', 'What's the impact?'), with analysis tailored to the content type.
+- **🏷️ Rich Content Classification**: Support for multiple article types, including:
+    - `news_brief`
+    - `research_deep_dive`
+    - `explanatory_article`
+    - `founder_story`
+    - `startup_story`
+- **🌐 Telugu-First Approach**: Primarily focused on creating high-quality, original content for the Telugu-speaking community.
+- **🔄 Automated Content Sourcing**: Gathers raw articles from multiple tech sources to feed the curation pipeline.
+- **📱 Responsive Design**: A clean, mobile-first user interface for both readers and editors.
 
 ### 🏷️ Technology Categories
 

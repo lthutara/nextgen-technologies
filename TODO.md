@@ -6,23 +6,14 @@ This file outlines the development plan for our next session.
 
 Our main goal is to build a robust and reliable content pipeline using RSS feeds.
 
-- [ ] **Finalize `RSSConnector`:**
-    - [ ] Create the `app/scraping/rss_connector.py` file.
-    - [ ] Implement the logic to fetch and parse multiple RSS feeds using the `feedparser` library.
 
 - [ ] **Update `requirements.txt`:**
     - [ ] Add `feedparser` to the list of dependencies.
-
-- [ ] **Integrate into `ScraperManager`:**
-    - [ ] Modify `app/scraping/scraper_manager.py` to use the new `RSSConnector`.
-    - [ ] Update the logic to allow different connectors (RSS, arXiv) to be used for different categories.
 
 - [ ] **Curate RSS Feeds:**
     - [ ] Research and add more high-quality RSS feeds for all technology categories defined in `config/settings.py`.
     - [ ] Investigate and debug 'Cybersecurity' RSS feeds.
 
-- [ ] **Test the Full Pipeline:**
-    - [ ] Run the `scrape_all_categories()` function and verify that articles from RSS feeds are being correctly added to the database.
 
 ## Priority 2: Content Extraction from Links
 
@@ -40,11 +31,6 @@ Once we have links from RSS feeds, we need a way to get the full article content
 
 ## Architectural Roadmap
 
-- [ ] **Implement a Two-Stage Content Pipeline:** Decouple scraping from curation for better quality control and resource management.
-    - [ ] **Database:** Create a new `raw_articles` table to serve as a staging area for all incoming content.
-    - [ ] **Connectors:** Modify all existing data sources (RSS, arXiv) to save their findings to the `raw_articles` table.
-    - [ ] **Curation UI:** Build a new admin interface to review, filter, and select content from the `raw_articles` table.
-    - [ ] **Promotion Logic:** Implement the functionality to "promote" a curated raw article to the main, user-facing `articles` table.
 
 - [ ] **Refactor to a Unified Connectors Architecture:** Reorganize the data acquisition modules for better scalability and clarity.
     - [ ] **Create `app/connectors/` directory:** This will be the new home for all data source modules.

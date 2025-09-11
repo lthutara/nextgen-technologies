@@ -21,6 +21,7 @@ class Article(Base):
     published_date = Column(DateTime)
     scraped_date = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+    content_type = Column(String, nullable=True, default='news')
 
     def __repr__(self):
         return f"<Article(title='{self.title}', category='{self.category}')>"
@@ -39,6 +40,7 @@ class RawArticle(Base):
     published_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     scraped_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     image_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    content_type: Mapped[Optional[str]] = mapped_column(String, nullable=True, default='news')
 
 
 class ScrapingLog(Base):

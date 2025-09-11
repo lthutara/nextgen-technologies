@@ -113,6 +113,15 @@
 
 ### 1. Information Architecture
 
+#### **Content Strategy & Types**
+The platform will support a variety of content types to provide a rich and diverse experience for the user. Each type has a distinct purpose and will be supported by a tailored analysis prompt in the curation workflow.
+
+- **`news_brief`**: Standard news articles about recent events, product launches, or company announcements.
+- **`research_deep_dive`**: In-depth analysis of academic papers, research findings, or complex technological breakthroughs.
+- **`explanatory_article`**: Educational "how-to" or "what-is" articles that explain a specific concept, technology, or trend.
+- **`founder_story`**: Narrative-driven articles focusing on the personal journey and vision of a startup founder.
+- **`startup_story`**: Case studies focusing on the journey of a specific company, its product, and its impact on the market.
+
 #### **Current Navigation Flow**
 ```
 Home (Latest News)
@@ -133,19 +142,38 @@ Home (Latest News)
 
 ### 2. User Journey Mapping
 
-#### **Primary User Flow**
-1. **Landing**: User arrives at homepage
-2. **Scanning**: Quick overview of latest tech news
-3. **Selection**: Choose article or category of interest
-4. **Reading**: Access full article on external source
-5. **Return**: Back to platform for more content
-6. **Discovery**: Explore other categories or sections
+#### **Primary User Flow (Reader)**
+1. **Landing**: User arrives at the homepage and sees a list of curated tech articles in Telugu, with clear labels for content type (e.g., 'News', 'Research').
+2. **Scanning & Filtering**: User gets a quick overview and can filter by category or content type.
+3. **Selection**: User chooses an article that interests them.
+4. **Reading**: User reads the high-quality, reconstructed article on the platform.
+5. **Discovery**: User explores other articles, potentially diving deeper into research papers or catching up on news briefs.
 
-#### **Secondary Flows**
-- **Category Browsing**: Direct navigation to specific tech domains
-- **Information Seeking**: About, How it Works, Contact pages
-- **Manual Updates**: Triggering fresh content scraping
-- **Language Switching**: (Planned) Toggle between English/Telugu
+#### **Secondary User Flow (Editor/Curator)**
+1.  **Navigation**: Editor navigates to the `/curation` page.
+2.  **Selection**: Editor chooses a promising raw article from the queue.
+3.  **Classification**: 
+    *   The editor first classifies the content by selecting a type from the defined list (e.g., `news_brief`, `explanatory_article`, `founder_story`, etc.) from a dropdown menu.
+4.  **Analysis (Dissection)**:
+    *   Based on the selected type, the editor clicks an "Analyze" button.
+    *   The system uses a tailored prompt to process the source article and presents a structured analysis. For example:
+        *   For a `founder_story`: "Who is the founder?", "What was their background?", "What were the key challenges?"
+        *   For an `explanatory_article`: "What is the core concept?", "Provide a simple analogy.", "Why is it important?"
+5.  **Transformation & Creation**:
+    *   Guided by the classification and the structured analysis, the editor clicks "Create Article".
+    *   An editing form appears, pre-filled with the analysis.
+    *   The editor writes a new, insightful article in Telugu, adopting the appropriate tone and depth for the content type.
+6.  **Publishing**:
+    *   Editor clicks "Save Article".
+    *   The new Telugu article, along with its `content_type`, is saved to the public `articles` table.
+    *   The original raw article is removed from the curation queue.
+7.  **Verification**: Editor verifies the new article on the public-facing website, checking for the correct content type label.
+
+#### **Other Flows**
+- **Category Browsing**: Direct navigation to specific tech domains.
+- **Information Seeking**: About, How it Works, Contact pages.
+- **Manual Updates**: Triggering fresh content scraping via the admin panel.
+- **Language Switching**: (Planned) Toggle between English/Telugu.
 
 ### 3. Responsive Design Strategy
 
