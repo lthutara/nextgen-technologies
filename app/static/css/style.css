@@ -4,23 +4,33 @@
     font-family: 'Noto Sans Telugu', sans-serif;
 }
 
+/* Featured Article */
 .featured-article-card {
-    border: none;
+    border: none; /* A cleaner look without borders */
 }
 
 .featured-article-card .card-title {
-    font-size: 1.5rem;
+    font-size: 2rem; /* Larger font for the featured title */
     font-weight: bold;
+    margin-top: 0.5rem;
 }
 
 .featured-article-image {
     width: 100%;
-    height: 300px;
+    height: 300px; /* Adjusted height for a balanced feel */
     object-fit: cover;
+    border-radius: 0.5rem; /* Softly rounded corners */
 }
 
+/* Standard Article Cards */
 .article-card {
-    border: 1px solid #ddd;
+    border: 1px solid #e9ecef; /* Lighter border */
+    border-radius: 0.5rem;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.article-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
 .article-card .card-title {
@@ -30,7 +40,7 @@
 
 .latest-articles-img {
     width: 100%;
-    height: 100px;
+    height: 120px; /* Fixed height for latest articles images */
     object-fit: cover;
 }
 
@@ -43,7 +53,5 @@
 }
 
 .sidebar-card {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 20px;
+    
 }

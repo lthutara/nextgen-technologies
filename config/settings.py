@@ -122,6 +122,19 @@ class Settings(BaseSettings):
         ]
     }
     
+    CATEGORY_IMAGES: dict = {
+        "AI": "/static/img/placeholder_ai.png",
+        "Cloud Computing": "/static/img/placeholder_cloud.png",
+        "Cybersecurity": "/static/img/placeholder_cyber.png",
+        "Defence Tech": "/static/img/placeholder_defence.png",
+        "Space Tech": "/static/img/placeholder_space.png",
+        "Start-ups": "/static/img/placeholder_startup.png",
+        "Quantum Computing": "/static/img/placeholder.png",
+        "Renewable Energy": "/static/img/placeholder.png",
+        "Tech News": "/static/img/placeholder.png",
+        "DEFAULT": "/static/img/placeholder.png"
+    }
+
     class Config:
         env_file = ".env"
 

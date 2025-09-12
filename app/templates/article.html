@@ -16,10 +16,10 @@
             {% if article.image_url %}
             <img src="{{ article.image_url }}" class="img-fluid rounded mb-4" alt="{{ article.title }}">
             {% else %}
-            {% set placeholder_image = '/static/img/placeholder_general.jpg' %}
-            {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.jpg' %}
-            {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.jpg' %}
-            {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.jpg' %}
+            {% set placeholder_image = '/static/img/placeholder_general.png' %}
+            {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.png' %}
+            {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.png' %}
+            {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.png' %}
             {% endif %}
             <img src="{{ placeholder_image }}" class="img-fluid rounded mb-4" alt="Placeholder Image for {{ article.category }}">
             {% endif %}

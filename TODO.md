@@ -57,6 +57,7 @@ Once we have links from RSS feeds, we need a way to get the full article content
 - [ ] **Improve Overall Color Theme:** Refine the website's color palette for a more cohesive and visually appealing experience.
 - [ ] **Add Images to Articles:** Integrate relevant images within article content to enhance visual engagement.
 - [ ] **Hero Section Image Sourcing:** Implement logic to display a category-specific stock image (or a general stock image) in the hero section, instead of relying on images extracted from the latest article.
+- [ ] **FIX: Images Not Loading on Homepage:** Despite replacing placeholder `.jpg`s with `.png`s and updating template paths, images are not loading. This is likely a server-side caching issue with Uvicorn or a static file serving problem. We need to ensure images load correctly for both scraped and manually added articles.
 
 ## New Priority Items (from user)
 

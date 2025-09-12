@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException, Request, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -58,7 +59,8 @@ class RawArticleResponse(BaseModel):
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=lifespan)
 
 # Static files and templates
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+static_files_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static")
+app.mount("/static", StaticFiles(directory=static_files_path), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Initialize database
@@ -131,6 +133,7 @@ async def home(request: Request, db: Session = Depends(get_db), lang: str = Cook
         Article.category.in_(top_stories_categories)
     ).order_by(Article.scraped_date.desc()).limit(8).all()
     
+    print(f"Latest articles: {latest_articles}")
     context = get_template_context(request, language, latest_articles=latest_articles, top_stories=top_stories)
     return templates.TemplateResponse("index.html", context)
 
@@ -238,7 +241,9 @@ async def approve_raw_article(article_id: int, db: Session = Depends(get_db)):
         source_name=raw_article.source_name,
         category=raw_article.category,
         published_date=raw_article.published_date,
-        scraped_date=raw_article.scraped_date
+        scraped_date=raw_article.scraped_date,
+        image_url=raw_article.image_url,
+        content_type=raw_article.content_type
     )
     db.add(article)
     db.delete(raw_article) # Delete raw article after approval

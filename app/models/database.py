@@ -22,9 +22,10 @@ class Article(Base):
     scraped_date = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     content_type = Column(String, nullable=True, default='news')
+    image_url = Column(String, nullable=True)
 
     def __repr__(self):
-        return f"<Article(title='{self.title}', category='{self.category}')>"
+        return f"<Article(title='{self.title}', category='{self.category}', image_url='{self.image_url}')>"
 
 
 class RawArticle(Base):

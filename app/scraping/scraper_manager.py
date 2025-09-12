@@ -81,7 +81,7 @@ class ScraperManager:
                             source_name=article_data.source_name,
                             category=article_data.category,
                             published_date=article_data.published_date,
-                            image_url=article_data.image_url
+                            image_url=settings.CATEGORY_IMAGES.get(article_data.category, settings.CATEGORY_IMAGES["DEFAULT"])
                         )
                         db.add(raw_article)
                         new_articles += 1
