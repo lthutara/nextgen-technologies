@@ -131,10 +131,15 @@ async def home(request: Request, db: Session = Depends(get_db), lang: str = Cook
     top_stories = db.query(Article).filter(
         Article.is_active == True,
         Article.category.in_(top_stories_categories)
-    ).order_by(Article.scraped_date.desc()).limit(8).all()
+    ).order_by(Article.scraped_date.desc()).limit(4).all()
+    
+    ai_articles = db.query(Article).filter(
+        Article.is_active == True,
+        Article.category == "AI"
+    ).order_by(Article.scraped_date.desc()).limit(4).all()
     
     print(f"Latest articles: {latest_articles}")
-    context = get_template_context(request, language, latest_articles=latest_articles, top_stories=top_stories)
+    context = get_template_context(request, language, latest_articles=latest_articles, top_stories=top_stories, ai_articles=ai_articles)
     return templates.TemplateResponse("index.html", context)
 
 @app.get("/category/{category}", response_class=HTMLResponse)

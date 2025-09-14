@@ -10,7 +10,7 @@
 }
 
 .featured-article-card .card-title {
-    font-size: 2rem; /* Larger font for the featured title */
+    font-size: 1.5rem; /* Larger font for the featured title */
     font-weight: bold;
     margin-top: 0.5rem;
 }
@@ -53,7 +53,63 @@
 }
 
 .sidebar-card {
-    
+    background-color: transparent; /* Revert to transparent */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: none; /* Remove box shadow */
+}
+
+.latest-articles-section {
+    background-color: transparent; /* Revert to transparent */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: none; /* Remove box shadow */
+}
+
+.latest-articles-section #latest-articles {
+    background-color: #17a2b8; /* Match banner color */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.latest-articles-section h2,
+.latest-articles-section #latest-articles small {
+    color: #ffffff; /* White text for readability */
+}
+
+.sidebar-card .card-header {
+    background-color: #17a2b8; /* Match banner color */
+    color: #ffffff; /* White text */
+    border-bottom: 1px solid #ced4da; /* Keep border for separation */
+}
+
+.sidebar-card .card-header h5 {
+    color: #ffffff; /* White text */
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.sidebar-article-list .list-group-item {
+    background-color: #ffffff; /* White background for list items */
+    color: #212529; /* Dark text */
+    border-color: #e9ecef; /* Light grey border */
+}
+
+.sidebar-article-list .list-group-item a {
+    color: #212529; /* Dark text */
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sidebar-article-list .list-group-item small {
+    color: #6c757d; /* Muted grey for small text */
+}
+
+.sidebar-article-list .list-group-item img {
+    width: 50px;
+    height: 50px;
 }
 
 /* Top Banner */

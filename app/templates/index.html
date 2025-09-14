@@ -14,7 +14,7 @@
                     <h2 class="card-title">
                         <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">{{ featured_article.title }}</a>
                     </h2>
-                    <p class="card-text"><small class="text-muted">{{ _('article_source') }}: {{ featured_article.source_name }}</small></p>
+                    
                 </div>
             </div>
         {% else %}
@@ -28,32 +28,34 @@
         {% endif %}
 
         {# Latest Articles Section #}
-        <div id="latest-articles" class="d-flex justify-content-between align-items-center mb-3">
-            <h2>{{ _('home_latest_articles') }}</h2>
-            <small class="text-muted">{{ (latest_articles|length) - 1 if (latest_articles|length) > 0 else 0 }} recent articles</small>
-        </div>
-        <div class="row">
-            {% for article in latest_articles[1:] %}
-            <div class="col-md-6 mb-4">
-                <div class="card article-card latest-article-card">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <a href="/article/{{ article.id }}">
-                            <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder.png') }}" class="img-fluid rounded-start latest-articles-img" alt="Article image">
-                            </a>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-2">
-                                <h5 class="card-title truncate-text">
-                                    <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
-                                </h5>
-                                <small class="text-muted">{{ _('article_source') }}: {{ article.source_name }}</small>
+        <div class="latest-articles-section">
+            <div id="latest-articles" class="d-flex justify-content-between align-items-center mb-3">
+                <h2>{{ _('home_latest_articles') }}</h2>
+                <small class="text-muted">{{ (latest_articles|length) - 1 if (latest_articles|length) > 0 else 0 }} recent articles</small>
+            </div>
+            <div class="row">
+                {% for article in latest_articles[1:] %}
+                <div class="col-md-6 mb-4">
+                    <div class="card article-card latest-article-card">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <a href="/article/{{ article.id }}">
+                                <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder.png') }}" class="img-fluid rounded-start latest-articles-img" alt="Article image">
+                                </a>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title truncate-text">
+                                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
+                                    </h5>
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
     
@@ -62,12 +64,29 @@
             <div class="card-header">
                 <h5>{{ _('sidebar_top_stories') }}</h5>
             </div>
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush sidebar-article-list">
                 {% for article in top_stories %}
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div>
                         <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
-                        <small class="text-muted">{{ article.source_name }}</small>
+                        
+                    </div>
+                    <img src="{{ article.image_url }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card sidebar-card mt-4">
+            <div class="card-header">
+                <h5>{{ _('category_ai') }}</h5>
+            </div>
+            <ul class="list-group list-group-flush sidebar-article-list">
+                {% for article in ai_articles %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div>
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
+                        
                     </div>
                     <img src="{{ article.image_url }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
                 </li>
