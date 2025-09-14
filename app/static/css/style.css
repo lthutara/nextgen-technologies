@@ -55,3 +55,38 @@
 .sidebar-card {
     
 }
+
+/* Top Banner */
+.top-banner {
+    background-color: #17a2b8; /* Bootstrap info color */
+    padding: 0.8rem 0;
+}
+
+.site-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff; /* White */
+    margin: 0;
+    line-height: 1.2;
+}
+
+.social-icons .social-icon {
+    font-size: 1.5rem;
+    color: #ffffff; /* White */
+    margin-left: 1rem;
+    transition: color 0.2s ease-in-out;
+}
+
+.social-icons .social-icon:hover {
+    color: rgba(255, 255, 255, 0.8); /* Lighter white on hover */
+}
+
+/* Navbar */
+.navbar .nav-link {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.navbar.bg-light {
+    border-bottom: 1px solid #ced4da; /* A light grey border */
+}

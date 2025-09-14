@@ -35,7 +35,7 @@
         <div class="row">
             {% for article in latest_articles[1:] %}
             <div class="col-md-6 mb-4">
-                <div class="card article-card">
+                <div class="card article-card latest-article-card">
                     <div class="row g-0">
                         <div class="col-md-4">
                             <a href="/article/{{ article.id }}">
@@ -43,7 +43,7 @@
                             </a>
                         </div>
                         <div class="col-md-8">
-                            <div class="card-body">
+                            <div class="card-body p-2">
                                 <h5 class="card-title truncate-text">
                                     <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
                                 </h5>
@@ -64,9 +64,12 @@
             </div>
             <ul class="list-group list-group-flush">
                 {% for article in top_stories %}
-                <li class="list-group-item">
-                    <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
-                    <small class="text-muted">{{ article.source_name }}</small>
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div>
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
+                        <small class="text-muted">{{ article.source_name }}</small>
+                    </div>
+                    <img src="{{ article.image_url }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
                 </li>
                 {% endfor %}
             </ul>
