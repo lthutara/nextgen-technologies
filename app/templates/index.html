@@ -6,7 +6,7 @@
         {# Featured Article Section #}
         {% if latest_articles %}
             {% set featured_article = latest_articles[0] %}
-            <div class="card featured-article-card mb-4">
+            <div class="card featured-article-card mb-2">
                 <a href="/article/{{ featured_article.id }}">
                     <img src="{{ featured_article.image_url if featured_article.image_url else url_for('static', path='img/placeholder.png') }}" class="featured-article-image" alt="Featured article image">
                 </a>
