@@ -42,6 +42,17 @@ class RawArticle(Base):
     scraped_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     image_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     content_type: Mapped[Optional[str]] = mapped_column(String, nullable=True, default='news')
+    status: Mapped[str] = mapped_column(String, default='pending')
+
+
+class ArticleSection(Base):
+    __tablename__ = "article_sections"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    raw_article_id: Mapped[int] = mapped_column(Integer, index=True)
+    section_title: Mapped[str] = mapped_column(String)
+    section_content: Mapped[str] = mapped_column(Text)
+
 
 
 class ScrapingLog(Base):

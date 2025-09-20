@@ -52,8 +52,7 @@
                                     <p class="card-text summary-text">${article.summary}</p>
                                     <p class="card-text"><small class="text-muted">Source: ${article.source_name} | Category: ${article.category}</small></p>
                                     <a href="${article.source_url}" class="btn btn-secondary btn-sm" target="_blank">Read Original</a>
-                                    <button class="btn btn-info btn-sm summarize-btn" data-id="${article.id}">Summarize</button>
-                                    <button class="btn btn-success btn-sm approve-btn" data-id="${article.id}">Approve</button>
+                                    <a href="/curation/process/${article.id}" class="btn btn-info btn-sm">Process</a>
                                     <button class="btn btn-danger btn-sm reject-btn" data-id="${article.id}">Reject</button>
                                 </div>
                             </div>
@@ -73,16 +72,8 @@
         }
 
         function addEventListeners() {
-            document.querySelectorAll('.approve-btn:not(.listener-added)').forEach(button => {
-                button.addEventListener('click', (event) => handleAction(event.target.dataset.id, 'approve'));
-                button.classList.add('listener-added');
-            });
             document.querySelectorAll('.reject-btn:not(.listener-added)').forEach(button => {
                 button.addEventListener('click', (event) => handleAction(event.target.dataset.id, 'reject'));
-                button.classList.add('listener-added');
-            });
-            document.querySelectorAll('.summarize-btn:not(.listener-added)').forEach(button => {
-                button.addEventListener('click', (event) => handleSummarizeAction(event.target.dataset.id));
                 button.classList.add('listener-added');
             });
         }
@@ -108,43 +99,7 @@
             }
         }
 
-        async function handleSummarizeAction(articleId) {
-            const summarizeBtn = document.querySelector(`.summarize-btn[data-id="${articleId}"]`);
-            const card = document.getElementById(`article-card-${articleId}`);
-            const summaryTextElement = card.querySelector('.summary-text');
 
-            const originalButtonText = summarizeBtn.textContent;
-            summarizeBtn.disabled = true;
-            summarizeBtn.textContent = 'Summarizing...';
-
-            try {
-                const response = await fetch(`/api/raw_articles/${articleId}/summarize`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Update the summary text on the page
-                    summaryTextElement.textContent = result.new_summary;
-                    
-                    // Update the button to show "Summarized"
-                    summarizeBtn.textContent = 'Summarized';
-                    summarizeBtn.classList.remove('btn-info');
-                    summarizeBtn.classList.add('btn-secondary');
-                    // Button remains disabled
-                } else {
-                    alert(`Failed to summarize: ${result.detail}`);
-                    summarizeBtn.disabled = false;
-                    summarizeBtn.textContent = originalButtonText;
-                }
-            } catch (error) {
-                console.error('Error summarizing article:', error);
-                alert('An error occurred while summarizing.');
-                summarizeBtn.disabled = false;
-                summarizeBtn.textContent = originalButtonText;
-            }
-        }
 
         loadMoreBtn.addEventListener('click', fetchRawArticles);
 

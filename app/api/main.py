@@ -191,6 +191,16 @@ async def curation_page(request: Request, db: Session = Depends(get_db), lang: s
     context = get_template_context(request, language)
     return templates.TemplateResponse("curation.html", context)
 
+@app.get("/curation/process/{article_id}", response_class=HTMLResponse)
+async def process_article_page(article_id: int, request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
+    language = get_user_language(request, lang)
+    article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    context = get_template_context(request, language, article=article)
+    return templates.TemplateResponse("process.html", context)
+
 @app.get("/api/articles")
 async def get_articles(
     category: Optional[str] = None,
