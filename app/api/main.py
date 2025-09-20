@@ -336,13 +336,15 @@ async def save_dissected_article(article_id: int, request: Request, db: Session 
         raise HTTPException(status_code=404, detail="Raw article not found")
 
     data = await request.json()
+    article_title = data.get("article_title")
     article_type = data.get("article_type")
     sections_data = data.get("sections")
 
-    if not article_type or not sections_data:
-        raise HTTPException(status_code=400, detail="Missing article_type or sections data")
+    if not article_title or not article_type or not sections_data:
+        raise HTTPException(status_code=400, detail="Missing article_title, article_type or sections data")
 
-    # Update raw article status and content_type
+    # Update raw article title, status and content_type
+    raw_article.title = article_title
     raw_article.status = "dissecting"
     raw_article.content_type = article_type
     db.add(raw_article)

@@ -2,9 +2,137 @@
 
 {% block title %}{{ _("Process Article") }} - {{ super() }}{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleTypeSelect = document.getElementById('article-type');
+        const dissectSectionsDiv = document.getElementById('dissect-sections');
+
+        const sections = {
+            "News": [
+                "What is this about?",
+                "Any change to existing feature/item?",
+                "Brief background of the news.",
+                "When is it expected to come?",
+                "What value it might add?",
+                "Competitor advantage."
+            ],
+            "Research": [
+                "What is the research about?",
+                "What are the key findings?",
+                "What are the implications of the research?",
+                "What are the limitations of the research?"
+            ],
+            "Analysis": [
+                "What is being analyzed?",
+                "What are the main points of the analysis?",
+                "What are the conclusions of the analysis?",
+                "What are the recommendations?"
+            ],
+            "How-to": [
+                "What is the goal of this how-to?",
+                "What are the prerequisites?",
+                "What are the steps involved?",
+                "What is the expected outcome?"
+            ]
+        };
+
+        const saveDissectBtn = document.getElementById('save-dissect-btn');
+
+        saveDissectBtn.addEventListener('click', async function() {
+            const articleId = {{ article.id }};
+            const articleTitle = document.getElementById('article-title').value;
+            const articleType = articleTypeSelect.value;
+            const sectionsData = {};
+
+            // Collect data from dynamically generated text areas
+            dissectSectionsDiv.querySelectorAll('div.mb-3').forEach(sectionDiv => {
+                const title = sectionDiv.querySelector('label').textContent;
+                const content = sectionDiv.querySelector('textarea').value;
+                sectionsData[title] = content;
+            });
+
+            if (Object.keys(sectionsData).length === 0) {
+                alert('Please dissect the article before saving.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/raw_articles/${articleId}/save_dissection`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ article_title: articleTitle, article_type: articleType, sections: sectionsData })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert('Dissection saved successfully!');
+                    // Optionally, disable save button or provide visual feedback
+                } else {
+                    alert(`Failed to save dissection: ${result.detail || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error saving dissection:', error);
+                alert('An error occurred while saving dissection.');
+            }
+        });
+
+        articleTypeSelect.addEventListener('change', async function() {
+            const selectedType = this.value;
+            const articleId = {{ article.id }};
+            const dissectSectionsDiv = document.getElementById('dissect-sections');
+
+            if (selectedType === "Select Article Type") {
+                dissectSectionsDiv.innerHTML = '';
+                return;
+            }
+
+            dissectSectionsDiv.innerHTML = '<p>Generating dissection using AI...</p>';
+
+            try {
+                const response = await fetch(`/api/raw_articles/${articleId}/dissect_ai`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ article_type: selectedType })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    dissectSectionsDiv.innerHTML = ''; // Clear loading message
+                    // Populate the text areas with AI-generated content
+                    for (const sectionTitle in result.dissected_sections) {
+                        const sectionDiv = document.createElement('div');
+                        sectionDiv.classList.add('mb-3');
+
+                        const label = document.createElement('label');
+                        label.classList.add('form-label');
+                        label.textContent = sectionTitle;
+
+                        const textArea = document.createElement('textarea');
+                        textArea.classList.add('form-control');
+                        textArea.rows = 5; // Increased rows for better visibility
+                        textArea.value = result.dissected_sections[sectionTitle];
+
+                        sectionDiv.appendChild(label);
+                        sectionDiv.appendChild(textArea);
+
+                        dissectSectionsDiv.appendChild(sectionDiv);
+                    }
+                } else {
+                    dissectSectionsDiv.innerHTML = `<p class="text-danger">Failed to generate dissection: ${result.detail || 'Unknown error'}</p>`;
+                }
+            } catch (error) {
+                console.error('Error during AI dissection:', error);
+                dissectSectionsDiv.innerHTML = '<p class="text-danger">An error occurred during AI dissection.</p>';
+            }
+        });
+    });
+</script>
+{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">{{ _("Process Article") }}: {{ article.title }}</h1>
+    <h1 class="mb-4">{{ _("Process Article") }}: <input type="text" class="form-control d-inline-block w-75" id="article-title" value="{{ article.title }}"></h1>
 
     <div class="row">
         <div class="col-md-8">
@@ -14,7 +142,20 @@
         <div class="col-md-4">
             <h2>{{ _("Curation Actions") }}</h2>
             <div class="d-grid gap-2">
-                <button class="btn btn-primary" id="dissect-btn">{{ _("Dissect") }}</button>
+                <div class="mb-3">
+                    <label for="article-type" class="form-label">{{ _("Article Type") }}</label>
+                    <select class="form-select" id="article-type">
+                        <option selected>{{ _("Select Article Type") }}</option>
+                        <option value="News">{{ _("News") }}</option>
+                        <option value="Research">{{ _("Research") }}</option>
+                        <option value="Analysis">{{ _("Analysis") }}</option>
+                        <option value="How-to">{{ _("How-to") }}</option>
+                    </select>
+                </div>
+
+                <div id="dissect-sections"></div>
+
+                <button class="btn btn-primary" id="save-dissect-btn">{{ _("Save Dissection") }}</button>
                 <button class="btn btn-secondary" id="rewrite-btn">{{ _("Re-write") }}</button>
                 <button class="btn btn-success" id="approve-btn">{{ _("Approve") }}</button>
             </div>
