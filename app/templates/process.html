@@ -2,6 +2,38 @@
 
 {% block title %}{{ _("Process Article") }} - {{ super() }}{% endblock %}
 
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ _("Process Article") }}: <input type="text" class="form-control d-inline-block w-75" id="article-title" value="{{ article.title }}"></h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-3">
+                <label for="article-type" class="form-label">{{ _("Article Type") }}</label>
+                <select class="form-select" id="article-type">
+                    <option selected>{{ _("Select Article Type") }}</option>
+                    <option value="News">{{ _("News") }}</option>
+                    <option value="Research">{{ _("Research") }}</option>
+                    <option value="Analysis">{{ _("Analysis") }}</option>
+                    <option value="How-to">{{ _("How-to") }}</option>
+                </select>
+            </div>
+
+            <div id="dissect-sections"></div>
+
+            <button class="btn btn-primary" id="save-dissect-btn">{{ _("Save Dissection") }}</button>
+        </div>
+        <div class="col-md-4">
+            <h2>{{ _("Curation Actions") }}</h2>
+            <div class="d-grid gap-2">
+                <button class="btn btn-secondary" id="rewrite-btn">{{ _("Re-write") }}</button>
+                <button class="btn btn-success" id="approve-btn">{{ _("Approve") }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block scripts %}
 {{ super() }}
 <script>
@@ -124,42 +156,9 @@
                 }
             } catch (error) {
                 console.error('Error during AI dissection:', error);
-                dissectSectionsDiv.innerHTML = '<p class="text-danger">An error occurred during AI dissection.</p>';
+                dissectSectionsDiv.innerHTML = '<p class="text-danger">An error occurred while parsing the AI response or during AI dissection.</p>';
             }
         });
     });
 </script>
-{% endblock %}
-{% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">{{ _("Process Article") }}: <input type="text" class="form-control d-inline-block w-75" id="article-title" value="{{ article.title }}"></h1>
-
-    <div class="row">
-        <div class="col-md-8">
-            <h2>{{ _("Original Content") }}</h2>
-            <p>{{ article.content }}</p>
-        </div>
-        <div class="col-md-4">
-            <h2>{{ _("Curation Actions") }}</h2>
-            <div class="d-grid gap-2">
-                <div class="mb-3">
-                    <label for="article-type" class="form-label">{{ _("Article Type") }}</label>
-                    <select class="form-select" id="article-type">
-                        <option selected>{{ _("Select Article Type") }}</option>
-                        <option value="News">{{ _("News") }}</option>
-                        <option value="Research">{{ _("Research") }}</option>
-                        <option value="Analysis">{{ _("Analysis") }}</option>
-                        <option value="How-to">{{ _("How-to") }}</option>
-                    </select>
-                </div>
-
-                <div id="dissect-sections"></div>
-
-                <button class="btn btn-primary" id="save-dissect-btn">{{ _("Save Dissection") }}</button>
-                <button class="btn btn-secondary" id="rewrite-btn">{{ _("Re-write") }}</button>
-                <button class="btn btn-success" id="approve-btn">{{ _("Approve") }}</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
