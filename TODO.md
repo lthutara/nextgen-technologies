@@ -66,17 +66,12 @@ Once we have links from RSS feeds, we need a way to get the full article content
     - [x] Initial UI for 'Process' page with editable title, article type selection, and dynamic Content Structuring sections.
     - [x] AI Content Structuring endpoint (using summarization as placeholder) and save Content Structuring endpoint implemented.
     - [x] Database schema updated (RawArticle status, ArticleSection model) and migrations applied.
-    - [ ] **Known Issues on /curation/process/{article_id} page:**
-        - Jinja2 TemplateSyntaxError (resolved by overwriting file, but needs re-verification).
-        - Original content not displayed (replaced with link).
-        - AI-generated summary displayed in main Content Structuring section (as intended, but needs further refinement to extract specific sections).
-        - 'Save Content Structuring' button feedback needs improvement (temporary text change implemented, needs verification).
+    - [x] Jinja2 TemplateSyntaxError (resolved by overwriting file, but needs re-verification).
+    - [x] Original content not displayed (replaced with link).
+    - [x] AI-generated summary displayed in main Content Structuring section (as intended, but needs further refinement to extract specific sections).
+    - [x] 'Save Content Structuring' button feedback needs improvement (temporary text change implemented, needs verification).
+
 - [ ] **Improve Curation Pipeline for Derived Content:**
     - [ ] Re-create new articles from derived content, avoiding original terminology.
     - [ ] Primary focus on Telugu version first.
     - [ ] Add translation to the curation pipeline.
-- [ ] **Add More Connectors:**
-    - [ ] YouTube summary (content simplification with idea and key points).
-    - [ ] Research-type articles connector.
-    - [ ] "How it works" articles connector.
-    - [ ] Founder stories connector.
