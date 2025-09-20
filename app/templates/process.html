@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">{{ _("Process Article") }}: <input type="text" class="form-control d-inline-block w-75" id="article-title" value="{{ article.title }}"></h1>
+    <h1 class="mb-4">{{ _("Content Preparation") }}: <input type="text" class="form-control d-inline-block w-75" id="article-title" value="{{ article.title }}"></h1>
     <p class="mb-3"><a href="{{ article.source_url }}" target="_blank">{{ _("View Original Article") }}</a></p>
 
     <div class="row">
@@ -20,15 +20,15 @@
                 </select>
             </div>
 
-            <div id="dissect-sections"></div>
+            <div id="content-structuring-sections"></div>
 
-            <button class="btn btn-primary" id="save-dissect-btn">{{ _("Save Dissection") }}</button>
-            <button class="btn btn-info" id="toggle-edit-btn">{{ _("Edit Dissection") }}</button>
+            <button class="btn btn-primary" id="save-content-structuring-btn">{{ _("Save Content Structuring") }}</button>
+            <button class="btn btn-info" id="edit-content-structuring-btn">{{ _("Edit Content Structuring") }}</button>
         </div>
         <div class="col-md-4">
             <h2>{{ _("Curation Actions") }}</h2>
             <div class="d-grid gap-2">
-                <button class="btn btn-secondary" id="rewrite-btn">{{ _("Re-write") }}</button>
+                <button class="btn btn-secondary" id="prepare-content-btn">{{ _("Prepare Content") }}</button>
                 <button class="btn btn-success" id="approve-btn">{{ _("Approve") }}</button>
             </div>
         </div>
@@ -41,7 +41,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const articleTypeSelect = document.getElementById('article-type');
-        const dissectSectionsDiv = document.getElementById('dissect-sections');
+        const contentStructuringSectionsDiv = document.getElementById('content-structuring-sections');
 
         const sections = {
             "News": [
@@ -72,138 +72,166 @@
             ]
         };
 
-        const saveDissectBtn = document.getElementById('save-dissect-btn');
-        const editDissectBtn = document.getElementById('toggle-edit-btn'); // Renamed for clarity
+        const saveContentStructuringBtn = document.getElementById('save-content-structuring-btn');
+        const editContentStructuringBtn = document.getElementById('edit-content-structuring-btn');
 
         // Initial state: text areas are editable, save button is visible, edit button is hidden
         let isEditing = true; // Start in editing mode
-        editDissectBtn.style.display = 'none'; // Hide edit button initially
+        editContentStructuringBtn.style.display = 'none'; // Hide edit button initially
 
-        function setDissectionEditability(editable) {
-            dissectSectionsDiv.querySelectorAll('textarea').forEach(textArea => {
+        function setContentStructuringEditability(editable) {
+            contentStructuringSectionsDiv.querySelectorAll('textarea').forEach(textArea => {
                 textArea.readOnly = !editable;
             });
-            saveDissectBtn.style.display = editable ? 'block' : 'none';
-            editDissectBtn.style.display = editable ? 'none' : 'block';
+            saveContentStructuringBtn.style.display = editable ? 'block' : 'none';
+            editContentStructuringBtn.style.display = editable ? 'none' : 'block';
             isEditing = editable;
         }
 
-        editDissectBtn.addEventListener('click', () => {
-            setDissectionEditability(true); // Enable editing
+        editContentStructuringBtn.addEventListener('click', () => {
+            setContentStructuringEditability(true); // Enable editing
         });
 
-        // Call AI dissection on article type change
+        // Call AI content structuring on article type change
         articleTypeSelect.addEventListener('change', async function() {
             const selectedType = this.value;
             const articleId = {{ article.id }};
 
             if (selectedType === "Select Article Type") {
-                dissectSectionsDiv.innerHTML = '';
-                setDissectionEditability(true); // Keep editable if no type selected
+                contentStructuringSectionsDiv.innerHTML = '';
+                setContentStructuringEditability(true); // Keep editable if no type selected
                 return;
             }
 
-            dissectSectionsDiv.innerHTML = '<p>Generating dissection using AI...</p>';
-            setDissectionEditability(false); // Disable editing during generation
+            contentStructuringSectionsDiv.innerHTML = '<p>Generating content structuring using AI...</p>';
+            setContentStructuringEditability(false); // Disable editing during generation
 
             try {
-                const response = await fetch(`/api/raw_articles/${articleId}/dissect_ai`, {
+                const response = await fetch(`/api/raw_articles/${articleId}/structure_content_ai`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ article_type: selectedType })
                 });
                 const result = await response.json();
+                console.log('AI Content Structuring Response:', result);
+                console.log('Structured Sections:', result.structured_sections);
 
                 if (response.ok && result.success) {
-                    dissectSectionsDiv.innerHTML = ''; // Clear loading message
+                    contentStructuringSectionsDiv.innerHTML = ''; // Clear loading message
+                    let combinedContent = '';
                     // Populate the text areas with AI-generated content
-                    for (const sectionTitle in result.dissected_sections) {
-                        const sectionDiv = document.createElement('div');
-                        sectionDiv.classList.add('mb-3');
-
-                        const label = document.createElement('label');
-                        label.classList.add('form-label');
-                        label.textContent = sectionTitle;
-
-                        const textArea = document.createElement('textarea');
-                        textArea.classList.add('form-control');
-                        textArea.rows = 5; // Increased rows for better visibility
-                        textArea.value = result.dissected_sections[sectionTitle];
-
-                        sectionDiv.appendChild(label);
-                        sectionDiv.appendChild(textArea);
-
-                        dissectSectionsDiv.appendChild(sectionDiv);
+                    for (const sectionTitle in result.structured_sections) {
+                        combinedContent += `## ${sectionTitle}\n\n${result.structured_sections[sectionTitle]}\n\n`;
                     }
-                    setDissectionEditability(true); // Default to edit mode after generation
+
+                    const singleSectionDiv = document.createElement('div');
+                    singleSectionDiv.classList.add('mb-3');
+
+                    const singleTextArea = document.createElement('textarea');
+                    singleTextArea.classList.add('form-control');
+                    singleTextArea.rows = 20; // Increased rows for better visibility
+                    singleTextArea.value = combinedContent.trim();
+
+                    singleSectionDiv.appendChild(singleTextArea);
+                    contentStructuringSectionsDiv.appendChild(singleSectionDiv);
+
+                    setContentStructuringEditability(true); // Default to edit mode after generation
                 } else {
-                    dissectSectionsDiv.innerHTML = `<p class="text-danger">Failed to generate dissection: ${result.detail || 'Unknown error'}</p>`;
+                    contentStructuringSectionsDiv.innerHTML = `<p class="text-danger">Failed to generate content structuring: ${result.detail || 'Unknown error'}</p>`;
                 }
-            } catch (error) {
-                console.error('Error during AI dissection:', error);
-                dissectSectionsDiv.innerHTML = '<p class="text-danger">An error occurred during AI dissection.</p>';
+            }
+            catch (error) {
+                console.error('Error during AI content structuring:', error);
+                contentStructuringSectionsDiv.innerHTML = '<p class="text-danger">An error occurred during AI content structuring.</p>';
             }
         });
 
-        // Save Dissection functionality
-        saveDissectBtn.addEventListener('click', async () => {
+        // Save Content Structuring functionality
+        saveContentStructuringBtn.addEventListener('click', async () => {
             const articleId = {{ article.id }};
-            const dissectedSections = {};
-            dissectSectionsDiv.querySelectorAll('.mb-3').forEach(sectionDiv => {
-                const label = sectionDiv.querySelector('label').textContent;
-                const textArea = sectionDiv.querySelector('textarea').value;
-                dissectedSections[label] = textArea;
+            const singleTextArea = contentStructuringSectionsDiv.querySelector('textarea');
+            const fullContent = singleTextArea.value;
+
+            const structuredSections = {};
+            const lines = fullContent.split('\n');
+            let currentSectionTitle = 'Untitled Section';
+            let currentSectionContent = [];
+
+            lines.forEach(line => {
+                if (line.startsWith('## ')) {
+                    // Save previous section if it exists
+                    if (currentSectionTitle !== 'Untitled Section' || currentSectionContent.length > 0) {
+                        structuredSections[currentSectionTitle.trim()] = currentSectionContent.join('\n').trim();
+                    }
+                    currentSectionTitle = line.substring(3).trim();
+                    currentSectionContent = [];
+                } else {
+                    currentSectionContent.push(line);
+                }
             });
+            // Save the last section
+            if (currentSectionTitle !== 'Untitled Section' || currentSectionContent.length > 0) {
+                structuredSections[currentSectionTitle.trim()] = currentSectionContent.join('\n').trim();
+            }
+
+            // If no sections were parsed, treat the whole content as one section
+            if (Object.keys(structuredSections).length === 0 && fullContent.trim() !== '') {
+                structuredSections['Content Structuring'] = fullContent.trim();
+            }
 
             const articleTitle = document.getElementById('article-title').value;
             const articleType = document.getElementById('article-type').value;
 
             if (!articleTitle || articleType === "Select Article Type") {
                 alert('Please provide an article title and select an article type.');
-                saveDissectBtn.disabled = false;
+                saveContentStructuringBtn.disabled = false;
                 return;
             }
 
-            try {
-                saveDissectBtn.textContent = 'Saving...';
-                saveDissectBtn.disabled = true;
+            console.log('Sending data to backend for saving:');
+            console.log('article_title:', articleTitle);
+            console.log('article_type:', articleType);
+            console.log('sections:', structuredSections);
 
-                const response = await fetch(`/api/raw_articles/${articleId}/save_dissection`, {
+            try {
+                saveContentStructuringBtn.textContent = 'Saving...';
+                saveContentStructuringBtn.disabled = true;
+
+                const response = await fetch(`/api/raw_articles/${articleId}/save_structured_content`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         article_title: articleTitle,
                         article_type: articleType,
-                        sections: dissectedSections
+                        sections: structuredSections
                     })
                 });
 
                 if (response.ok) {
-                    saveDissectBtn.textContent = 'Saved!';
+                    saveContentStructuringBtn.textContent = 'Saved!';
                     setTimeout(() => {
-                        saveDissectBtn.textContent = 'Save Dissection';
-                        saveDissectBtn.disabled = false;
-                        setDissectionEditability(false); // Go back to view mode after saving
+                        saveContentStructuringBtn.textContent = 'Save Content Structuring';
+                        saveContentStructuringBtn.disabled = false;
+                        setContentStructuringEditability(false); // Go back to view mode after saving
                     }, 2000);
                 } else {
                     const errorData = await response.json();
-                    alert(`Failed to save dissection: ${errorData.detail || 'Unknown error'}`);
-                    saveDissectBtn.textContent = 'Save Dissection';
-                    saveDissectBtn.disabled = false;
+                    alert(`Failed to save content structuring: ${errorData.detail || 'Unknown error'}`);
+                    saveContentStructuringBtn.textContent = 'Save Content Structuring';
+                    saveContentStructuringBtn.disabled = false;
                 }
             }
             catch (error) {
-                console.error('Error saving dissection:', error);
-                alert('An error occurred while saving dissection.');
-                saveDissectBtn.textContent = 'Save Dissection';
-                saveDissectBtn.disabled = false;
+                console.error('Error saving content structuring:', error);
+                alert('An error occurred while saving content structuring.');
+                saveContentStructuringBtn.textContent = 'Save Content Structuring';
+                saveContentStructuringBtn.disabled = false;
             }
         });
 
         // Initial setup for existing content (if any, e.g., after page refresh)
-        // This part needs to be refined if we want to load saved dissection on page load
         // For now, it just ensures textareas are read-only if they exist
-        setDissectionEditability(true); // Start in edit mode
+        setContentStructuringEditability(true); // Start in edit mode
     });
 </script>
 {% endblock %}

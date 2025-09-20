@@ -299,8 +299,8 @@ async def summarize_raw_article(article_id: int, db: Session = Depends(get_db)):
 
     return {"success": True, "message": "Article summarized successfully!", "new_summary": new_summary}
 
-@app.post("/api/raw_articles/{article_id}/dissect_ai")
-async def dissect_article_ai(article_id: int, request: Request, db: Session = Depends(get_db)):
+@app.post("/api/raw_articles/{article_id}/structure_content_ai")
+async def structure_content_ai(article_id: int, request: Request, db: Session = Depends(get_db)):
     if not settings.GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
 
@@ -316,33 +316,59 @@ async def dissect_article_ai(article_id: int, request: Request, db: Session = De
 
     # Define structured prompts based on article type
     prompts = {
-        "News": "Dissect the following news article into these sections: \"What is this about?\", \"Any change to existing feature/item?\", \"Brief background of the news.\", \"When is it expected to come?\", \"What value it might add?\", \"Competitor advantage.\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
-        "Research": "Dissect the following research article into these sections: \"What is the research about?\", \"What are the key findings?\", \"What are the implications of the research?\", \"What are the limitations of the research?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
-        "Analysis": "Dissect the following analysis article into these sections: \"What is being analyzed?\", \"What are the main points of the analysis?\", \"What are the conclusions of the analysis?\", \"What are the recommendations?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
-        "How-to": "Dissect the following how-to article into these sections: \"What is the goal of this how-to?\", \"What are the prerequisites?\", \"What are the steps involved?\", \"What is the expected outcome?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content."
+        "News": "Structure the following news article into these sections: \"What is this about?\", \"Any change to existing feature/item?\", \"Brief background of the news.\", \"When is it expected to come?\", \"What value it might add?\", \"Competitor advantage.\" Provide the output as a JSON object where keys are the section titles and values are the structured content.",
+        "Research": "Structure the following research article into these sections: \"What is the research about?\", \"What are the key findings?\", \"What are the implications of the research?\", \"What are the limitations of the research?\" Provide the output as a JSON object where keys are the section titles and values are the structured content.",
+        "Analysis": "Structure the following analysis article into these sections: \"What is being analyzed?\", \"What are the main points of the analysis?\", \"What are the conclusions of the analysis?\", \"What are the recommendations?\" Provide the output as a JSON object where keys are the section titles and values are the structured content.",
+        "How-to": "Structure the following how-to article into these sections: \"What is the goal of this how-to?\", \"What are the prerequisites?\", \"What are the steps involved?\", \"What is the expected outcome?\" Provide the output as a JSON object where keys are the section titles and values are the structured content."
     }
 
     if article_type not in prompts:
-        raise HTTPException(status_code=400, detail=f"Unsupported article type for dissection: {article_type}")
+        raise HTTPException(status_code=400, detail=f"Unsupported article type for content structuring: {article_type}")
 
     full_prompt = f"{prompts[article_type]}\n\nArticle Content:\n{raw_article.content}"
 
     try:
-        dissected_json_str = summarize_with_gemini(full_prompt)
+        structured_json_str = summarize_with_gemini(full_prompt)
+        print(f"Gemini raw output: {structured_json_str}")
+
         import json
+        parsed_content = None
+
+        # Attempt to parse as JSON directly
         try:
-            dissected_content = json.loads(dissected_json_str)
+            parsed_content = json.loads(structured_json_str)
         except json.JSONDecodeError:
-            # If Gemini doesn't return perfect JSON, try to parse it as a single summary
-            dissected_content = {"Summary": dissected_json_str}
+            pass # Not a direct JSON string, try extracting from markdown
 
-        return {"success": True, "dissected_sections": dissected_content}
+        if parsed_content is None:
+            # Try to extract content from a markdown code block
+            json_start = structured_json_str.find('```json')
+            json_end = structured_json_str.rfind('```')
+
+            if json_start != -1 and json_end != -1 and json_start < json_end:
+                extracted_json_str = structured_json_str[json_start + len('```json'):json_end].strip()
+                try:
+                    parsed_content = json.loads(extracted_json_str)
+                except json.JSONDecodeError:
+                    pass # Extraction failed, fall back to plain text
+
+        if parsed_content is None:
+            # Fallback to plain text if no valid JSON was found or extracted
+            structured_content = {"Content Structuring": structured_json_str}
+        else:
+            structured_content = parsed_content
+
+        print(f"After parsing strategy: {structured_content}")
+
+        return {"success": True, "structured_sections": structured_content}
+
+        return {"success": True, "structured_sections": structured_content}
     except Exception as e:
-        print(f"Error during AI dissection: {e}")
-        raise HTTPException(status_code=500, detail=f"AI dissection failed: {e}")
+        print(f"Error during AI content structuring: {e}")
+        raise HTTPException(status_code=500, detail=f"AI content structuring failed: {e}")
 
-@app.post("/api/raw_articles/{article_id}/save_dissection")
-async def save_dissected_article(article_id: int, request: Request, db: Session = Depends(get_db)):
+@app.post("/api/raw_articles/{article_id}/save_structured_content")
+async def save_structured_content(article_id: int, request: Request, db: Session = Depends(get_db)):
     raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
     if not raw_article:
         raise HTTPException(status_code=404, detail="Raw article not found")
@@ -357,7 +383,7 @@ async def save_dissected_article(article_id: int, request: Request, db: Session 
 
     # Update raw article title, status and content_type
     raw_article.title = article_title
-    raw_article.status = "dissecting"
+    raw_article.status = "structured"
     raw_article.content_type = article_type
     db.add(raw_article)
 
@@ -376,7 +402,7 @@ async def save_dissected_article(article_id: int, request: Request, db: Session 
     db.commit()
     db.refresh(raw_article)
 
-    return {"success": True, "message": "Dissected sections saved and article status updated!"}
+    return {"success": True, "message": "Structured sections saved and article status updated!"}
 
 @app.post("/api/scrape")
 async def trigger_scraping(category: Optional[str] = None):

@@ -78,5 +78,16 @@
     
     "language_selector": "Select Language",
     "language_english": "English",
-    "language_telugu": "తెలుగు"
+    "language_telugu": "తెలుగు",
+
+    "Content Preparation": "Content Preparation",
+    "Content Structuring": "Content Structuring",
+    "Save Content Structuring": "Save Content Structuring",
+    "Edit Content Structuring": "Edit Content Structuring",
+    "Prepare Content": "Prepare Content",
+    "Generating content structuring using AI...": "Generating content structuring using AI...",
+    "Failed to generate content structuring...": "Failed to generate content structuring:",
+    "An error occurred during AI content structuring.": "An error occurred during AI content structuring.",
+    "Failed to save content structuring...": "Failed to save content structuring:",
+    "An error occurred while saving content structuring.": "An error occurred while saving content structuring."
 }

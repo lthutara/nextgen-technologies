@@ -62,17 +62,15 @@ Once we have links from RSS feeds, we need a way to get the full article content
 
 ## New Priority Items (from user)
 
-- [x] **Implement new curation stage for re-writing articles**
-    - [x] Initial UI for 'Process' page with editable title, article type selection, and dynamic dissection sections.
-    - [x] AI dissection endpoint (using summarization as placeholder) and save dissection endpoint implemented.
+- [x] **Implement new curation stage for Content Preparation**
+    - [x] Initial UI for 'Process' page with editable title, article type selection, and dynamic Content Structuring sections.
+    - [x] AI Content Structuring endpoint (using summarization as placeholder) and save Content Structuring endpoint implemented.
     - [x] Database schema updated (RawArticle status, ArticleSection model) and migrations applied.
     - [ ] **Known Issues on /curation/process/{article_id} page:**
         - Jinja2 TemplateSyntaxError (resolved by overwriting file, but needs re-verification).
         - Original content not displayed (replaced with link).
-        - AI-generated summary displayed in main dissection section (as intended, but needs further refinement to extract specific sections).
-        - 'Save Dissection' button feedback needs improvement (temporary text change implemented, needs verification).
-- [ ] **Make Telugu the default language**
-- [ ] **Add new sections below Latest Articles and AI sections**
+        - AI-generated summary displayed in main Content Structuring section (as intended, but needs further refinement to extract specific sections).
+        - 'Save Content Structuring' button feedback needs improvement (temporary text change implemented, needs verification).
 - [ ] **Improve Curation Pipeline for Derived Content:**
     - [ ] Re-create new articles from derived content, avoiding original terminology.
     - [ ] Primary focus on Telugu version first.

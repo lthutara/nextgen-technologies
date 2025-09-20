@@ -77,6 +77,17 @@
     "footer_powered_by": "AI-ఆధారిత కంటెంట్ సమీకరణతో శక్తివంతమైనది",
     
     "language_selector": "భాష ఎంచుకోండి",
-    "language_english": "English",
-    "language_telugu": "తెలుగు"
+    "language_english": "ఆంగ్లం",
+    "language_telugu": "తెలుగు",
+
+    "Content Preparation": "కంటెంట్ తయారీ",
+    "Content Structuring": "కంటెంట్ నిర్మాణం",
+    "Save Content Structuring": "కంటెంట్ నిర్మాణాన్ని సేవ్ చేయండి",
+    "Edit Content Structuring": "కంటెంట్ నిర్మాణాన్ని సవరించండి",
+    "Prepare Content": "కంటెంట్‌ను సిద్ధం చేయండి",
+    "Generating content structuring using AI...": "AI ఉపయోగించి కంటెంట్ నిర్మాణాన్ని రూపొందిస్తోంది...",
+    "Failed to generate content structuring...": "కంటెంట్ నిర్మాణాన్ని రూపొందించడంలో విఫలమైంది:",
+    "An error occurred during AI content structuring.": "AI కంటెంట్ నిర్మాణంలో లోపం సంభవించింది.",
+    "Failed to save content structuring...": "కంటెంట్ నిర్మాణాన్ని సేవ్ చేయడంలో విఫలమైంది:",
+    "An error occurred while saving content structuring.": "కంటెంట్ నిర్మాణాన్ని సేవ్ చేయడంలో లోపం సంభవించింది."
 }
