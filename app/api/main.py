@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.models.database import Article, RawArticle, ScrapingLog, get_db, create_tables
+from app.models.database import Article, RawArticle, ScrapingLog, ArticleSection, get_db, create_tables
 from app.scraping.scraper_manager import ScraperManager
 from app.i18n import i18n_manager, get_text
 from config.settings import settings
@@ -298,6 +298,71 @@ async def summarize_raw_article(article_id: int, db: Session = Depends(get_db)):
     db.refresh(raw_article)
 
     return {"success": True, "message": "Article summarized successfully!", "new_summary": new_summary}
+
+@app.post("/api/raw_articles/{article_id}/dissect_ai")
+async def dissect_article_ai(article_id: int, request: Request, db: Session = Depends(get_db)):
+    if not settings.GEMINI_API_KEY:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
+
+    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not raw_article:
+        raise HTTPException(status_code=404, detail="Raw article not found")
+
+    data = await request.json()
+    article_type = data.get("article_type")
+
+    if not article_type:
+        raise HTTPException(status_code=400, detail="Missing article_type.")
+
+    # For now, we will just summarize the article as a placeholder for dissection
+    prompt = f"""Summarize the following {article_type} article:
+
+Article Content:
+{raw_article.content}
+"""
+
+    try:
+        dissected_content = summarize_with_gemini(prompt)
+        # Return a simple dictionary with a single 'summary' section for now
+        return {"success": True, "dissected_sections": {"Summary": dissected_content}}
+    except Exception as e:
+        print(f"Error during AI dissection: {e}")
+        raise HTTPException(status_code=500, detail=f"AI dissection failed: {e}")
+
+@app.post("/api/raw_articles/{article_id}/save_dissection")
+async def save_dissected_article(article_id: int, request: Request, db: Session = Depends(get_db)):
+    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
+    if not raw_article:
+        raise HTTPException(status_code=404, detail="Raw article not found")
+
+    data = await request.json()
+    article_type = data.get("article_type")
+    sections_data = data.get("sections")
+
+    if not article_type or not sections_data:
+        raise HTTPException(status_code=400, detail="Missing article_type or sections data")
+
+    # Update raw article status and content_type
+    raw_article.status = "dissecting"
+    raw_article.content_type = article_type
+    db.add(raw_article)
+
+    # Delete existing sections for this raw article to prevent duplicates on re-save
+    db.query(ArticleSection).filter(ArticleSection.raw_article_id == article_id).delete()
+
+    # Save new sections
+    for section_title, section_content in sections_data.items():
+        article_section = ArticleSection(
+            raw_article_id=article_id,
+            section_title=section_title,
+            section_content=section_content
+        )
+        db.add(article_section)
+
+    db.commit()
+    db.refresh(raw_article)
+
+    return {"success": True, "message": "Dissected sections saved and article status updated!"}
 
 @app.post("/api/scrape")
 async def trigger_scraping(category: Optional[str] = None):
