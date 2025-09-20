@@ -7,12 +7,13 @@ This file outlines the development plan for our next session.
 Our main goal is to build a robust and reliable content pipeline using RSS feeds.
 
 
-- [ ] **Update `requirements.txt`:**
-    - [ ] Add `feedparser` to the list of dependencies.
+- [x] **Update `requirements.txt`:**
+    - [x] Add `feedparser` to the list of dependencies.
 
 - [ ] **Curate RSS Feeds:**
     - [ ] Research and add more high-quality RSS feeds for all technology categories defined in `config/settings.py`.
     - [ ] Investigate and debug 'Cybersecurity' RSS feeds.
+    - [ ] **Note:** The 'Cybersecurity' RSS feeds might be failing because one or more of the URLs are invalid or unreachable. This could be causing the entire category to fail during scraping. The feeds need to be individually tested to identify the problematic source.
 
 
 ## Priority 2: Content Extraction from Links
@@ -61,6 +62,9 @@ Once we have links from RSS feeds, we need a way to get the full article content
 
 ## New Priority Items (from user)
 
+- [ ] **Implement new curation stage for re-writing articles**
+- [ ] **Make Telugu the default language**
+- [ ] **Add new sections below Latest Articles and AI sections**
 - [ ] **Improve Curation Pipeline for Derived Content:**
     - [ ] Re-create new articles from derived content, avoiding original terminology.
     - [ ] Primary focus on Telugu version first.

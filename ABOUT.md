@@ -1,23 +1,23 @@
-# About NextGen Technologies Portal
+# Techusuko Portal
 
 ## Vision & Mission
 
-**NextGen Technologies Portal** is a comprehensive technology news aggregation platform designed to bridge the gap between cutting-edge technological research and the broader community, with a special focus on making technology accessible to Telugu-speaking audiences.
+**Techusuko* is a comprehensive technology information platform designed to bridge the gap between cutting-edge technological advancements and the broader community, with a special focus on making technology accessible to all telugu speaking people. We aim to become number one source of technology information for telugus in particular and indian's in general. 
 
 ### Our Core Mission
-To democratize access to the latest technological advances by aggregating, curating, and presenting tech news and research in an accessible format that serves both English and Telugu-speaking communities.
+To democratize access to the latest technological advances to telugu-speaking communities. We(telugu) are lagging behind the latest break-throughs one is lack of information and second is the language. Enable them to take big steps intio enterprenuership than simple jobs. 
 
 ## The Idea Behind the Platform
 
 ### 🎯 Primary Objective
-Create a centralized hub for technology enthusiasts, researchers, students, and professionals to stay updated with the latest developments across multiple technology domains without having to visit dozens of different sources.
+Create a centralized hub for technology enthusiasts, researchers, students, and professionals to stay updated with the latest developments across multiple technology domains without having to visit dozens of different sources. This is not simple aggregater but a sourcing, curating and re-creating the needed news, reasearch and 'how to' and 'how it works' kind of items.
 
 ### 🌍 Bridging Language Barriers
 While most technological content is available in English, our platform aims to make this knowledge accessible to Telugu-speaking communities by providing:
-- **Bilingual Interface**: Complete UI available in both English and Telugu
-- **Content Summaries**: Key insights and summaries translated to Telugu
-- **Cultural Context**: Technology news relevant to Indian and South Asian markets
-- **Local Impact**: Highlighting how global tech trends affect regional markets
+- **Bilingual Interface**: Complete UI available in both Telugu and English.
+- **Content curation**: Re-create items with key insights and  translated to Telugu.
+- **Cultural Context**: Technology news relevant to Indian and South Asian markets.
+- **Local Impact**: Highlighting how global tech trends affect regional markets.
 
 ## Technology Categories We Cover
 
