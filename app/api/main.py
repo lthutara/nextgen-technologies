@@ -314,17 +314,29 @@ async def dissect_article_ai(article_id: int, request: Request, db: Session = De
     if not article_type:
         raise HTTPException(status_code=400, detail="Missing article_type.")
 
-    # For now, we will just summarize the article as a placeholder for dissection
-    prompt = f"""Summarize the following {article_type} article:
+    # Define structured prompts based on article type
+    prompts = {
+        "News": "Dissect the following news article into these sections: \"What is this about?\", \"Any change to existing feature/item?\", \"Brief background of the news.\", \"When is it expected to come?\", \"What value it might add?\", \"Competitor advantage.\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
+        "Research": "Dissect the following research article into these sections: \"What is the research about?\", \"What are the key findings?\", \"What are the implications of the research?\", \"What are the limitations of the research?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
+        "Analysis": "Dissect the following analysis article into these sections: \"What is being analyzed?\", \"What are the main points of the analysis?\", \"What are the conclusions of the analysis?\", \"What are the recommendations?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content.",
+        "How-to": "Dissect the following how-to article into these sections: \"What is the goal of this how-to?\", \"What are the prerequisites?\", \"What are the steps involved?\", \"What is the expected outcome?\" Provide the output as a JSON object where keys are the section titles and values are the dissected content."
+    }
 
-Article Content:
-{raw_article.content}
-"""
+    if article_type not in prompts:
+        raise HTTPException(status_code=400, detail=f"Unsupported article type for dissection: {article_type}")
+
+    full_prompt = f"{prompts[article_type]}\n\nArticle Content:\n{raw_article.content}"
 
     try:
-        dissected_content = summarize_with_gemini(prompt)
-        # Return a simple dictionary with a single 'summary' section for now
-        return {"success": True, "dissected_sections": {"Summary": dissected_content}}
+        dissected_json_str = summarize_with_gemini(full_prompt)
+        import json
+        try:
+            dissected_content = json.loads(dissected_json_str)
+        except json.JSONDecodeError:
+            # If Gemini doesn't return perfect JSON, try to parse it as a single summary
+            dissected_content = {"Summary": dissected_json_str}
+
+        return {"success": True, "dissected_sections": dissected_content}
     except Exception as e:
         print(f"Error during AI dissection: {e}")
         raise HTTPException(status_code=500, detail=f"AI dissection failed: {e}")
