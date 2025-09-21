@@ -12,9 +12,12 @@ class Article(Base):
     __tablename__ = "articles"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False, index=True)
-    content = Column(Text)
-    summary = Column(Text)
+    title_en = Column(String, nullable=False, index=True)
+    content_en = Column(Text, nullable=True)
+    summary_en = Column(Text, nullable=True)
+    title_te = Column(String, nullable=True, index=True)
+    content_te = Column(Text, nullable=True)
+    summary_te = Column(Text, nullable=True)
     source_url = Column(String, unique=True, nullable=False)
     source_name = Column(String, nullable=False)
     category = Column(String, nullable=False, index=True)
@@ -25,7 +28,7 @@ class Article(Base):
     image_url = Column(String, nullable=True)
 
     def __repr__(self):
-        return f"<Article(title='{self.title}', category='{self.category}', image_url='{self.image_url}')>"
+        return f"<Article(title='{self.title_en}', category='{self.category}', image_url='{self.image_url}')>"
 
 
 class RawArticle(Base):
@@ -50,8 +53,10 @@ class ArticleSection(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     raw_article_id: Mapped[int] = mapped_column(Integer, index=True)
-    section_title: Mapped[str] = mapped_column(String)
-    section_content: Mapped[str] = mapped_column(Text)
+    section_title_en: Mapped[str] = mapped_column(String)
+    section_content_en: Mapped[str] = mapped_column(Text)
+    section_title_te: Mapped[str] = mapped_column(String, nullable=True)
+    section_content_te: Mapped[str] = mapped_column(Text, nullable=True)
 
 
 

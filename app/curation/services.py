@@ -64,8 +64,19 @@ class CurationService:
                     pass
         
         if parsed_content is None:
-            return {"Content Structuring": structured_json_str}
-        return parsed_content
+            parsed_content = {"Content Structuring": structured_json_str}
+
+        # Create bilingual structure
+        bilingual_content = {}
+        for title, content in parsed_content.items():
+            # This is a placeholder for actual translation
+            bilingual_content[title] = {
+                "en": content,
+                "te": f"{content}_te"
+            }
+        
+        # The frontend will now receive a dictionary with 'en' and 'te' keys for each section
+        return bilingual_content
 
     def save_structured_content(self, article_id: int, article_title: str, article_type: str, sections_data: dict):
         raw_article = self.db.query(RawArticle).filter(RawArticle.id == article_id).first()
@@ -79,11 +90,25 @@ class CurationService:
 
         self.db.query(ArticleSection).filter(ArticleSection.raw_article_id == article_id).delete()
 
-        for section_title, section_content in sections_data.items():
+        for section_title_en, content_versions in sections_data.items():
+            content_en = None
+            content_te = None
+
+            if isinstance(content_versions, dict):
+                # Handle the new format (when frontend is updated)
+                content_en = content_versions.get('en')
+                content_te = content_versions.get('te')
+            elif isinstance(content_versions, str):
+                # Handle the old format (from current frontend) for backward compatibility
+                content_en = content_versions
+                content_te = f"{content_versions}_te"  # Create placeholder
+
             article_section = ArticleSection(
                 raw_article_id=article_id,
-                section_title=section_title,
-                section_content=section_content
+                section_title_en=section_title_en,
+                section_content_en=content_en,
+                section_title_te=f"{section_title_en}_te", # Placeholder for title translation
+                section_content_te=content_te
             )
             self.db.add(article_section)
 
