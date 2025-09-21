@@ -75,3 +75,10 @@ Once we have links from RSS feeds, we need a way to get the full article content
     - [ ] Re-create new articles from derived content, avoiding original terminology.
     - [ ] Primary focus on Telugu version first.
     - [ ] Add translation to the curation pipeline.
+
+## Current Session Action Items
+
+- [ ] **Improve Final Content Formatting:** Remove markdown symbols (##) and ensure proper newlines in final article textareas.
+- [ ] **Integrate Real Telugu Translation:** Replace the `_te` placeholder with actual machine translation.
+- [ ] **Implement "Save Draft" Option:** Allow saving final articles without immediate publishing.
+- [ ] **(Future) Integrate Rich Text Editor:** Enhance content editing experience with a rich text editor.

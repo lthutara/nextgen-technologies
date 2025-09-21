@@ -26,7 +26,9 @@ class Settings(BaseSettings):
         "Cloud Computing",
         "Cybersecurity",
         "Start-ups",
-        "Tech News"
+        "Tech News",
+        "Semiconductors",
+        "Robotics"
     ]
 
     ARXIV_CATEGORIES: list = [
@@ -43,7 +45,9 @@ class Settings(BaseSettings):
         "Cloud Computing": ["RSS"],
         "Cybersecurity": ["RSS"],
         "Start-ups": ["RSS"],
-        "Tech News": ["RSS"]
+        "Tech News": ["RSS"],
+        "Semiconductors": ["RSS"],
+        "Robotics": ["RSS"]
     }
 
     RSS_FEEDS: dict = {
@@ -119,6 +123,22 @@ class Settings(BaseSettings):
             "https://www.engadget.com/rss.xml",
             "https://www.cnet.com/rss/news/",
             "https://www.techradar.com/rss"
+        ],
+        "Semiconductors": [
+            "https://www.semiconductor-today.com/rss.shtml",
+            "https://sst.semiconductor-digest.com/feed/",
+            "https://sst.semiconductor-digest.com/category/solid-state-technology/feed/",
+            "https://sst.semiconductor-digest.com/category/packaging/feed/",
+            "https://www.semiconductors.org/news-events/latest-news/feed/",
+            "https://www.eetimes.com/tag/semiconductors/feed/",
+            "https://semiengineering.com/feed/",
+            "https://semiwiki.com/feed/"
+        ],
+        "Robotics": [
+            "https://robohub.org/feed",
+            "https://www.therobotreport.com/feed/",
+            "https://spectrum.ieee.org/feeds/topic/robotics",
+            "https://news.mit.edu/topic/robotics/rss"
         ]
     }
     
@@ -132,6 +152,8 @@ class Settings(BaseSettings):
         "Quantum Computing": "/static/img/placeholder.png",
         "Renewable Energy": "/static/img/placeholder.png",
         "Tech News": "/static/img/placeholder.png",
+        "Semiconductors": "/static/img/placeholder_general.png",
+        "Robotics": "/static/img/placeholder_general.png",
         "DEFAULT": "/static/img/placeholder.png"
     }
 
