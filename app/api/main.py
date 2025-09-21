@@ -192,9 +192,9 @@ async def get_articles(
         "articles": [
             {
                 "id": article.id,
-                "title": article.title,
-                "summary": article.summary,
-                "content": article.content,
+                "title_en": article.title_en,
+                "summary_en": article.summary_en,
+                "content_en": article.content_en,
                 "source_url": article.source_url,
                 "source_name": article.source_name,
                 "category": article.category,

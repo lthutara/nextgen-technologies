@@ -1,5 +1,6 @@
 
 import json
+from datetime import datetime
 from sqlalchemy.orm import Session
 from app.models.database import RawArticle, ArticleSection, Article
 from app.curation.schemas import FinalArticleData

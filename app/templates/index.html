@@ -8,11 +8,11 @@
             {% set featured_article = latest_articles[0] %}
             <div class="card featured-article-card mb-2">
                 <a href="/article/{{ featured_article.id }}">
-                    <img src="{{ featured_article.image_url if featured_article.image_url else url_for('static', path='img/placeholder.png') }}" class="featured-article-image" alt="Featured article image">
+                    <img src="{{ featured_article.image_url if featured_article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="featured-article-image" alt="Featured article image">
                 </a>
                 <div class="card-body">
                     <h2 class="card-title">
-                        <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">{{ featured_article.title }}</a>
+                        <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">{{ featured_article.title_en }}</a>
                     </h2>
                     
                 </div>
@@ -40,13 +40,13 @@
                         <div class="row g-0">
                             <div class="col-md-4">
                                 <a href="/article/{{ article.id }}">
-                                <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder.png') }}" class="img-fluid rounded-start latest-articles-img" alt="Article image">
+                                <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="img-fluid rounded-start latest-articles-img" alt="Article image">
                                 </a>
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body p-2">
                                     <h5 class="card-title truncate-text">
-                                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title }}</a>
+                                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title_en }}</a>
                                     </h5>
                                     
                                 </div>
@@ -68,10 +68,10 @@
                 {% for article in top_stories %}
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div>
-                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title_en }}</a>
                         
                     </div>
-                    <img src="{{ article.image_url }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
+                    <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
                 </li>
                 {% endfor %}
             </ul>
@@ -88,7 +88,7 @@
                         <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
                         
                     </div>
-                    <img src="{{ article.image_url }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
+                    <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
                 </li>
                 {% endfor %}
             </ul>
