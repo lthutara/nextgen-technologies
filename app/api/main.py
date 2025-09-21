@@ -13,8 +13,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from contextlib import asynccontextmanager
 from app.scheduler import ArticleScheduler
-from app.scraping.content_extractor import extract_article_content
-from app.services.summarizer import summarize_with_gemini
 
 # --- Scheduler and Lifespan Management ---
 scheduler = ArticleScheduler()
@@ -41,20 +39,6 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print("INFO:     Shutting down application and scheduler...")
     scheduler.stop()
-
-class RawArticleResponse(BaseModel):
-    id: int
-    title: str
-    content: str
-    summary: Optional[str]
-    source_url: str
-    source_name: str
-    category: str
-    published_date: Optional[datetime]
-    scraped_date: datetime
-
-    class Config:
-        from_attributes = True
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=lifespan)
 
@@ -185,21 +169,10 @@ async def article_page(article_id: int, request: Request, db: Session = Depends(
     context = get_template_context(request, language, article=article)
     return templates.TemplateResponse("article.html", context)
 
-@app.get("/curation", response_class=HTMLResponse) # New endpoint for curation UI
-async def curation_page(request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
-    language = get_user_language(request, lang)
-    context = get_template_context(request, language)
-    return templates.TemplateResponse("curation.html", context)
+from app.curation.router import router as curation_router
 
-@app.get("/curation/process/{article_id}", response_class=HTMLResponse)
-async def process_article_page(article_id: int, request: Request, db: Session = Depends(get_db), lang: str = Cookie(None)):
-    language = get_user_language(request, lang)
-    article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not article:
-        raise HTTPException(status_code=404, detail="Article not found")
-    
-    context = get_template_context(request, language, article=article)
-    return templates.TemplateResponse("process.html", context)
+app.include_router(curation_router)
+
 
 @app.get("/api/articles")
 async def get_articles(
@@ -231,177 +204,6 @@ async def get_articles(
             for article in articles
         ]
     }
-
-@app.get("/api/raw_articles", response_model=List[RawArticleResponse]) # New endpoint
-async def get_raw_articles(
-    limit: int = 20,
-    offset: int = 0,
-    db: Session = Depends(get_db)
-):
-    raw_articles = db.query(RawArticle).order_by(RawArticle.scraped_date.desc()).offset(offset).limit(limit).all()
-    return raw_articles
-
-@app.post("/api/raw_articles/{article_id}/approve") # New endpoint for approving raw articles
-async def approve_raw_article(article_id: int, db: Session = Depends(get_db)):
-    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not raw_article:
-        raise HTTPException(status_code=404, detail="Raw article not found")
-
-    # Create a new Article from RawArticle data
-    article = Article(
-        title=raw_article.title,
-        content=raw_article.content,
-        summary=raw_article.summary,
-        source_url=raw_article.source_url,
-        source_name=raw_article.source_name,
-        category=raw_article.category,
-        published_date=raw_article.published_date,
-        scraped_date=raw_article.scraped_date,
-        image_url=raw_article.image_url,
-        content_type=raw_article.content_type
-    )
-    db.add(article)
-    db.delete(raw_article) # Delete raw article after approval
-    db.commit()
-    return {"success": True, "message": "Raw article approved and moved to articles!"}
-
-@app.post("/api/raw_articles/{article_id}/reject") # New endpoint for rejecting raw articles
-async def reject_raw_article(article_id: int, db: Session = Depends(get_db)):
-    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not raw_article:
-        raise HTTPException(status_code=404, detail="Raw article not found")
-
-    db.delete(raw_article) # Delete raw article
-    db.commit()
-    return {"success": True, "message": "Raw article rejected!"}
-
-
-@app.post("/api/raw_articles/{article_id}/summarize")
-async def summarize_raw_article(article_id: int, db: Session = Depends(get_db)):
-    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not raw_article:
-        raise HTTPException(status_code=404, detail="Raw article not found")
-
-    # Step 1: Extract full content
-    full_content = extract_article_content(raw_article.source_url)
-    if not full_content:
-        raise HTTPException(status_code=500, detail="Failed to extract article content.")
-
-    # Step 2: Summarize the content
-    new_summary = summarize_with_gemini(full_content)
-    if new_summary.startswith("[Summarization failed"):
-        raise HTTPException(status_code=500, detail=new_summary)
-
-    # Step 3: Update the database
-    raw_article.summary = new_summary
-    db.commit()
-    db.refresh(raw_article)
-
-    return {"success": True, "message": "Article summarized successfully!", "new_summary": new_summary}
-
-@app.post("/api/raw_articles/{article_id}/structure_content_ai")
-async def structure_content_ai(article_id: int, request: Request, db: Session = Depends(get_db)):
-    if not settings.GEMINI_API_KEY:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
-
-    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not raw_article:
-        raise HTTPException(status_code=404, detail="Raw article not found")
-
-    data = await request.json()
-    article_type = data.get("article_type")
-
-    if not article_type:
-        raise HTTPException(status_code=400, detail="Missing article_type.")
-
-    # Define structured prompts based on article type
-    prompts = {
-        "News": "Structure the following news article into these sections: \"What is this about?\", \"Any change to existing feature/item?\", \"Brief background of the news.\", \"When is it expected to come?\", \"What value it might add?\", \"Competitor advantage.\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-        "Research": "Structure the following research article into these sections: \"What is the research about?\", \"What are the key findings?\", \"What are the implications of the research?\", \"What are the limitations of the research?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-        "Analysis": "Structure the following analysis article into these sections: \"What is being analyzed?\", \"What are the main points of the analysis?\", \"What are the conclusions of the analysis?\", \"What are the recommendations?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-        "How-to": "Structure the following how-to article into these sections: \"What is the goal of this how-to?\", \"What are the prerequisites?\", \"What are the steps involved?\", \"What is the expected outcome?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content."
-
-    if article_type not in prompts:
-        raise HTTPException(status_code=400, detail=f"Unsupported article type for content structuring: {article_type}")
-
-    full_prompt = f"{prompts[article_type]}\n\nArticle Content:\n{raw_article.content}"
-
-    try:
-        structured_json_str = summarize_with_gemini(full_prompt)
-        print(f"Gemini raw output: {structured_json_str}")
-
-        import json
-        parsed_content = None
-
-        # Attempt to parse as JSON directly
-        try:
-            parsed_content = json.loads(structured_json_str)
-        except json.JSONDecodeError:
-            pass # Not a direct JSON string, try extracting from markdown
-
-        if parsed_content is None:
-            # Try to extract content from a markdown code block
-            json_start = structured_json_str.find('```json')
-            json_end = structured_json_str.rfind('```')
-
-            if json_start != -1 and json_end != -1 and json_start < json_end:
-                extracted_json_str = structured_json_str[json_start + len('```json'):json_end].strip()
-                try:
-                    parsed_content = json.loads(extracted_json_str)
-                except json.JSONDecodeError:
-                    pass # Extraction failed, fall back to plain text
-
-        if parsed_content is None:
-            # Fallback to plain text if no valid JSON was found or extracted
-            structured_content = {"Content Structuring": structured_json_str}
-        else:
-            structured_content = parsed_content
-
-        print(f"After parsing strategy: {structured_content}")
-
-        return {"success": True, "structured_sections": structured_content}
-
-        return {"success": True, "structured_sections": structured_content}
-    except Exception as e:
-        print(f"Error during AI content structuring: {e}")
-        raise HTTPException(status_code=500, detail=f"AI content structuring failed: {e}")
-
-@app.post("/api/raw_articles/{article_id}/save_structured_content")
-async def save_structured_content(article_id: int, request: Request, db: Session = Depends(get_db)):
-    raw_article = db.query(RawArticle).filter(RawArticle.id == article_id).first()
-    if not raw_article:
-        raise HTTPException(status_code=404, detail="Raw article not found")
-
-    data = await request.json()
-    article_title = data.get("article_title")
-    article_type = data.get("article_type")
-    sections_data = data.get("sections")
-
-    if not article_title or not article_type or not sections_data:
-        raise HTTPException(status_code=400, detail="Missing article_title, article_type or sections data")
-
-    # Update raw article title, status and content_type
-    raw_article.title = article_title
-    raw_article.status = "structured"
-    raw_article.content_type = article_type
-    db.add(raw_article)
-
-    # Delete existing sections for this raw article to prevent duplicates on re-save
-    db.query(ArticleSection).filter(ArticleSection.raw_article_id == article_id).delete()
-
-    # Save new sections
-    for section_title, section_content in sections_data.items():
-        article_section = ArticleSection(
-            raw_article_id=article_id,
-            section_title=section_title,
-            section_content=section_content
-        )
-        db.add(article_section)
-
-    db.commit()
-    db.refresh(raw_article)
-
-    return {"success": True, "message": "Structured sections saved and article status updated!"}
 
 @app.post("/api/scrape")
 async def trigger_scraping(category: Optional[str] = None):

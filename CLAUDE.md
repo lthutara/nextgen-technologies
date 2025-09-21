@@ -17,9 +17,10 @@ NextGen Technologies Portal is a Python-based web application that aggregates an
 - Future: Python-babel for internationalization (Telugu translation planned)
 
 **Key Components:**
+- `app/curation/`: Curation workflow routes and business logic
 - `app/scraping/`: Web scraping modules with base scraper class and source-specific scrapers
 - `app/models/`: Database models for articles and scraping logs
-- `app/api/`: FastAPI routes and web interface
+- `app/api/`: Core FastAPI routes and web interface
 - `app/templates/`: Jinja2 HTML templates
 - `app/scheduler.py`: Automated scraping scheduler
 - `config/settings.py`: Centralized configuration management

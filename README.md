@@ -170,6 +170,7 @@ TECH_CATEGORIES = [
 nextgen-technologies/
 ├── app/
 │   ├── api/                 # FastAPI routes and endpoints
+│   ├── curation/           # Content curation workflow, routes, and services
 │   ├── models/             # Database models and schemas
 │   ├── scraping/           # Web scraping modules
 │   ├── static/             # CSS, JS, and static assets
