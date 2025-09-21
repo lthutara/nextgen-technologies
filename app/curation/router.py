@@ -42,6 +42,22 @@ class RawArticleResponse(BaseModel):
 
 router = APIRouter()
 
+from app.curation.schemas import FinalArticleData
+
+@router.post("/api/raw_articles/{article_id}/publish_final")
+async def publish_final_article(article_id: int, final_article_data: FinalArticleData, db: Session = Depends(get_db)):
+    service = CurationService(db)
+    try:
+        published_article = service.publish_final_article(article_id, final_article_data)
+        if published_article is None:
+            raise HTTPException(status_code=404, detail="Raw article not found or already published.")
+        return {"success": True, "message": "Article published successfully!", "article_id": published_article.id}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"Error publishing final article: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to publish article: {e}")
+
 @router.get("/curation", response_class=HTMLResponse)
 async def curation_page(request: Request, db: Session = Depends(get_db)):
     # This import is here to avoid circular dependency issues if templates are moved

@@ -1,10 +1,13 @@
 
 import json
 from sqlalchemy.orm import Session
-from app.models.database import RawArticle, ArticleSection
+from app.models.database import RawArticle, ArticleSection, Article
+from app.curation.schemas import FinalArticleData
+
+from config.settings import settings
+
 from app.scraping.content_extractor import extract_article_content
 from app.services.summarizer import summarize_with_gemini
-from config.settings import settings
 
 class CurationService:
     def __init__(self, db: Session):
@@ -114,3 +117,35 @@ class CurationService:
 
         self.db.commit()
         return raw_article
+
+    def publish_final_article(self, raw_article_id: int, final_article_data: FinalArticleData):
+        raw_article = self.db.query(RawArticle).filter(RawArticle.id == raw_article_id).first()
+        if not raw_article:
+            return None
+
+        # Create new Article
+        new_article = Article(
+            title_en=final_article_data.title_en,
+            summary_en=final_article_data.summary_en,
+            content_en=final_article_data.content_en,
+            title_te=final_article_data.title_te,
+            summary_te=final_article_data.summary_te,
+            content_te=final_article_data.content_te,
+            image_url=final_article_data.image_url,
+            source_url=final_article_data.source_url,
+            source_name=final_article_data.source_name,
+            category=final_article_data.category,
+            published_date=final_article_data.published_date,
+            scraped_date=datetime.utcnow(), # Use current UTC time for scraped_date
+            is_active=True, # New articles are active by default
+            content_type=final_article_data.content_type
+        )
+        self.db.add(new_article)
+
+        # Update the raw article status instead of deleting
+        raw_article.status = 'published'
+        self.db.add(raw_article)
+
+        self.db.commit()
+        self.db.refresh(new_article)
+        return new_article

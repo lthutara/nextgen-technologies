@@ -8,7 +8,8 @@
     <p class="mb-3"><a href="{{ article.source_url }}" target="_blank">{{ _("View Original Article") }}</a></p>
 
     <div class="row">
-        <div class="col-md-8">
+        <!-- Left Column: Content Structuring -->
+        <div class="col-md-6">
             <div class="mb-3">
                 <label for="article-type" class="form-label">{{ _("Article Type") }}</label>
                 <select class="form-select" id="article-type">
@@ -31,11 +32,61 @@
 
             <button class="btn btn-primary" id="save-content-structuring-btn">{{ _("Save Content Structuring") }}</button>
         </div>
-        <div class="col-md-4">
-            <h2>{{ _("Curation Actions") }}</h2>
-            <div class="d-grid gap-2">
-                <button class="btn btn-secondary" id="prepare-content-btn">{{ _("Prepare Content") }}</button>
-                <button class="btn btn-success" id="approve-btn">{{ _("Approve") }}</button>
+
+        <!-- Right Column: Final Article Details -->
+        <div class="col-md-6">
+            <h2 class="mt-4 mb-3">{{ _("Final Article Details") }}</h2>
+
+            <div class="mb-3">
+                <label for="final-title-en" class="form-label">{{ _("Title (English)") }}</label>
+                <textarea class="form-control" id="final-title-en" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="final-summary-en" class="form-label">{{ _("Summary (English)") }}</label>
+                <textarea class="form-control" id="final-summary-en" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="final-content-en" class="form-label">{{ _("Content (English)") }}</label>
+                <textarea class="form-control" id="final-content-en" rows="10"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="final-title-te" class="form-label">{{ _("Title (Telugu)") }}</label>
+                <textarea class="form-control" id="final-title-te" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="final-summary-te" class="form-label">{{ _("Summary (Telugu)") }}</label>
+                <textarea class="form-control" id="final-summary-te" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="final-content-te" class="form-label">{{ _("Content (Telugu)") }}</label>
+                <textarea class="form-control" id="final-content-te" rows="10"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="image-url" class="form-label">{{ _("Image URL") }}</label>
+                <input type="text" class="form-control" id="image-url" value="{{ article.image_url or '' }}">
+            </div>
+            <div class="mb-3">
+                <label for="source-name" class="form-label">{{ _("Source Name") }}</label>
+                <input type="text" class="form-control" id="source-name" value="{{ article.source_name }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">{{ _("Category") }}</label>
+                <input type="text" class="form-control" id="category" value="{{ article.category }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="published-date" class="form-label">{{ _("Published Date") }}</label>
+                <input type="text" class="form-control" id="published-date" value="{{ article.published_date.strftime('%Y-%m-%d %H:%M') if article.published_date else '' }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="content-type" class="form-label">{{ _("Content Type") }}</label>
+                <input type="text" class="form-control" id="content-type" value="{{ article.content_type or '' }}" readonly>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-secondary" id="prepare-final-content-btn">{{ _("Prepare Final Content") }}</button>
+                <button class="btn btn-success" id="publish-final-article-btn">{{ _("Publish Final Article") }}</button>
             </div>
         </div>
     </div>
@@ -50,6 +101,17 @@
         const contentStructuringSectionsDiv = document.getElementById('content-structuring-sections');
         const saveContentStructuringBtn = document.getElementById('save-content-structuring-btn');
         const langToggleGroup = document.getElementById('lang-toggle-group');
+
+        const prepareFinalContentBtn = document.getElementById('prepare-final-content-btn');
+        const publishFinalArticleBtn = document.getElementById('publish-final-article-btn');
+
+        const finalTitleEn = document.getElementById('final-title-en');
+        const finalSummaryEn = document.getElementById('final-summary-en');
+        const finalContentEn = document.getElementById('final-content-en');
+        const finalTitleTe = document.getElementById('final-title-te');
+        const finalSummaryTe = document.getElementById('final-summary-te');
+        const finalContentTe = document.getElementById('final-content-te');
+        const imageUrl = document.getElementById('image-url');
 
         let currentLang = 'en';
         let structuredData = {}; // To store the full bilingual data
@@ -205,11 +267,99 @@
                     saveContentStructuringBtn.textContent = 'Save Content Structuring';
                     saveContentStructuringBtn.disabled = false;
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 console.error('Error saving content structuring:', error);
                 alert('An error occurred while saving content structuring.');
                 saveContentStructuringBtn.textContent = 'Save Content Structuring';
                 saveContentStructuringBtn.disabled = false;
+            }
+        });
+
+        // --- Prepare Final Content ---
+        prepareFinalContentBtn.addEventListener('click', () => {
+            // Combine structured sections into final content textareas
+            let combinedEnContent = '';
+            let combinedTeContent = '';
+            let firstEnSummary = '';
+            let firstTeSummary = '';
+
+            for (const sectionTitle in structuredData) {
+                const section = structuredData[sectionTitle];
+                const enText = section.en || '';
+                const teText = section.te || '';
+
+                // For content, combine all sections
+                combinedEnContent += `## ${sectionTitle}\n\n${enText}\n\n`;
+                combinedTeContent += `## ${sectionTitle}_te\n\n${teText}\n\n`; // Placeholder for translated title
+
+                // For summary, take the first significant section or overall summary
+                if (!firstEnSummary && enText.length > 50) {
+                    firstEnSummary = enText.substring(0, 200) + '...'; // Take first 200 chars as summary
+                }
+                if (!firstTeSummary && teText.length > 50) {
+                    firstTeSummary = teText.substring(0, 200) + '...'; // Take first 200 chars as summary
+                }
+            }
+
+            finalTitleEn.value = document.getElementById('article-title').value;
+            finalContentEn.value = combinedEnContent.trim();
+            finalSummaryEn.value = firstEnSummary || finalContentEn.value.substring(0, 200) + '...';
+
+            finalTitleTe.value = document.getElementById('article-title').value + '_te'; // Placeholder
+            finalContentTe.value = combinedTeContent.trim();
+            finalSummaryTe.value = firstTeSummary || finalContentTe.value.substring(0, 200) + '...';
+        });
+
+        // --- Publish Final Article ---
+        publishFinalArticleBtn.addEventListener('click', async () => {
+            const articleId = {{ article.id }};
+
+            const finalArticleData = {
+                title_en: finalTitleEn.value,
+                summary_en: finalSummaryEn.value,
+                content_en: finalContentEn.value,
+                title_te: finalTitleTe.value,
+                summary_te: finalSummaryTe.value,
+                content_te: finalContentTe.value,
+                image_url: imageUrl.value,
+                source_url: "{{ article.source_url }}",
+                source_name: "{{ article.source_name }}",
+                category: "{{ article.category }}",
+                published_date: "{{ article.published_date.isoformat() if article.published_date else '' }}",
+                content_type: "{{ article.content_type or '' }}"
+            };
+
+            // Basic validation
+            if (!finalArticleData.title_en || !finalArticleData.content_en) {
+                alert('English title and content are required to publish.');
+                return;
+            }
+
+            try {
+                publishFinalArticleBtn.textContent = 'Publishing...';
+                publishFinalArticleBtn.disabled = true;
+
+                const response = await fetch(`/api/raw_articles/${articleId}/publish_final`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(finalArticleData)
+                });
+
+                if (response.ok) {
+                    alert('Article published successfully!');
+                    window.location.href = '/curation'; // Redirect back to curation list
+                } else {
+                    const errorData = await response.json();
+                    alert(`Failed to publish article: ${errorData.detail || 'Unknown error'}`);
+                    publishFinalArticleBtn.textContent = 'Publish Final Article';
+                    publishFinalArticleBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error publishing article:', error);
+                alert('An error occurred while publishing the article.');
+                publishFinalArticleBtn.textContent = 'Publish Final Article';
+                publishFinalArticleBtn.disabled = false;
             }
         });
     });
