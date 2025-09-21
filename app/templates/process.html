@@ -20,11 +20,16 @@
                 </select>
             </div>
 
-            <h2 class="mt-4 mb-3">{{ _("Content Structuring") }}</h2>
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mt-4 mb-3">{{ _("Content Structuring") }}</h2>
+                <div class="btn-group mb-3" role="group" id="lang-toggle-group">
+                    <button type="button" class="btn btn-primary lang-toggle" data-lang="en">English</button>
+                    <button type="button" class="btn btn-outline-secondary lang-toggle" data-lang="te">Telugu</button>
+                </div>
+            </div>
             <div id="content-structuring-sections"></div>
 
             <button class="btn btn-primary" id="save-content-structuring-btn">{{ _("Save Content Structuring") }}</button>
-            <button class="btn btn-info" id="edit-content-structuring-btn">{{ _("Edit Content Structuring") }}</button>
         </div>
         <div class="col-md-4">
             <h2>{{ _("Curation Actions") }}</h2>
@@ -43,69 +48,51 @@
     document.addEventListener('DOMContentLoaded', function() {
         const articleTypeSelect = document.getElementById('article-type');
         const contentStructuringSectionsDiv = document.getElementById('content-structuring-sections');
-
-        const sections = {
-            "News": [
-                "What is this about?",
-                "Any change to existing feature/item?",
-                "Brief background of the news.",
-                "When is it expected to come?",
-                "What value it might add?",
-                "Competitor advantage."
-            ],
-            "Research": [
-                "What is the research about?",
-                "What are the key findings?",
-                "What are the implications of the research?",
-                "What are the limitations of the research?"
-            ],
-            "Analysis": [
-                "What is being analyzed?",
-                "What are the main points of the analysis?",
-                "What are the conclusions of the analysis?",
-                "What are the recommendations?"
-            ],
-            "How-to": [
-                "What is the goal of this how-to?",
-                "What are the prerequisites?",
-                "What are the steps involved?",
-                "What is the expected outcome?"
-            ]
-        };
-
         const saveContentStructuringBtn = document.getElementById('save-content-structuring-btn');
-        const editContentStructuringBtn = document.getElementById('edit-content-structuring-btn');
+        const langToggleGroup = document.getElementById('lang-toggle-group');
 
-        // Initial state: text areas are editable, save button is visible, edit button is hidden
-        let isEditing = true; // Start in editing mode
-        editContentStructuringBtn.style.display = 'none'; // Hide edit button initially
+        let currentLang = 'en';
+        let structuredData = {}; // To store the full bilingual data
 
-        function setContentStructuringEditability(editable) {
-            contentStructuringSectionsDiv.querySelectorAll('textarea').forEach(textArea => {
-                textArea.readOnly = !editable;
-            });
-            saveContentStructuringBtn.style.display = editable ? 'block' : 'none';
-            editContentStructuringBtn.style.display = editable ? 'none' : 'block';
-            isEditing = editable;
-        }
-
-        editContentStructuringBtn.addEventListener('click', () => {
-            setContentStructuringEditability(true); // Enable editing
+        // --- Language Toggle Logic ---
+        langToggleGroup.addEventListener('click', (e) => {
+            if (e.target.classList.contains('lang-toggle')) {
+                currentLang = e.target.dataset.lang;
+                updateLanguageView();
+            }
         });
 
-        // Call AI content structuring on article type change
+        function updateLanguageView() {
+            document.querySelectorAll('.lang-toggle').forEach(btn => {
+                if (btn.dataset.lang === currentLang) {
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-outline-secondary');
+                } else {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-secondary');
+                }
+            });
+
+            document.querySelectorAll('.lang-content-wrapper').forEach(wrapper => {
+                if (wrapper.dataset.lang === currentLang) {
+                    wrapper.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            });
+        }
+
+        // --- AI Content Structuring ---
         articleTypeSelect.addEventListener('change', async function() {
             const selectedType = this.value;
             const articleId = {{ article.id }};
 
             if (selectedType === "Select Article Type") {
                 contentStructuringSectionsDiv.innerHTML = '';
-                setContentStructuringEditability(true); // Keep editable if no type selected
                 return;
             }
 
             contentStructuringSectionsDiv.innerHTML = '<p>Generating content structuring using AI...</p>';
-            setContentStructuringEditability(false); // Disable editing during generation
 
             try {
                 const response = await fetch(`/api/raw_articles/${articleId}/structure_content_ai`, {
@@ -114,85 +101,83 @@
                     body: JSON.stringify({ article_type: selectedType })
                 });
                 const result = await response.json();
-                console.log('AI Content Structuring Response:', result);
-                console.log('Structured Sections:', result.structured_sections);
 
                 if (response.ok && result.success) {
-                    contentStructuringSectionsDiv.innerHTML = ''; // Clear loading message
-                    let combinedContent = '';
-                    // Populate the text areas with AI-generated content
-                    for (const sectionTitle in result.structured_sections) {
-                        combinedContent += `## ${sectionTitle}\n\n${result.structured_sections[sectionTitle]}\n\n`;
-                    }
-
-                    const singleSectionDiv = document.createElement('div');
-                    singleSectionDiv.classList.add('mb-3');
-
-                    const singleTextArea = document.createElement('textarea');
-                    singleTextArea.classList.add('form-control');
-                    singleTextArea.rows = 20; // Increased rows for better visibility
-                    singleTextArea.value = combinedContent.trim();
-
-                    singleSectionDiv.appendChild(singleTextArea);
-                    contentStructuringSectionsDiv.appendChild(singleSectionDiv);
-
-                    setContentStructuringEditability(true); // Default to edit mode after generation
+                    structuredData = result.structured_sections;
+                    renderStructuredContent();
+                    updateLanguageView();
                 } else {
                     contentStructuringSectionsDiv.innerHTML = `<p class="text-danger">Failed to generate content structuring: ${result.detail || 'Unknown error'}</p>`;
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 console.error('Error during AI content structuring:', error);
                 contentStructuringSectionsDiv.innerHTML = '<p class="text-danger">An error occurred during AI content structuring.</p>';
             }
         });
 
-        // Save Content Structuring functionality
+        function renderStructuredContent() {
+            contentStructuringSectionsDiv.innerHTML = ''; // Clear loading message
+
+            for (const sectionTitle in structuredData) {
+                const sectionData = structuredData[sectionTitle];
+                const sectionWrapper = document.createElement('div');
+                sectionWrapper.classList.add('mb-4', 'section-container');
+                sectionWrapper.dataset.sectionTitle = sectionTitle;
+
+                const titleElement = document.createElement('h5');
+                titleElement.textContent = sectionTitle;
+                sectionWrapper.appendChild(titleElement);
+
+                // English version
+                const enWrapper = document.createElement('div');
+                enWrapper.classList.add('lang-content-wrapper');
+                enWrapper.dataset.lang = 'en';
+                const enTextArea = document.createElement('textarea');
+                enTextArea.classList.add('form-control', 'lang-en-content');
+                enTextArea.rows = 5;
+                enTextArea.value = sectionData.en || '';
+                enWrapper.appendChild(enTextArea);
+                sectionWrapper.appendChild(enWrapper);
+
+                // Telugu version
+                const teWrapper = document.createElement('div');
+                teWrapper.classList.add('lang-content-wrapper');
+                teWrapper.dataset.lang = 'te';
+                const teTextArea = document.createElement('textarea');
+                teTextArea.classList.add('form-control', 'lang-te-content');
+                teTextArea.rows = 5;
+                teTextArea.value = sectionData.te || '';
+                teWrapper.appendChild(teTextArea);
+                sectionWrapper.appendChild(teWrapper);
+
+                contentStructuringSectionsDiv.appendChild(sectionWrapper);
+            }
+        }
+
+        // --- Save Content Structuring ---
         saveContentStructuringBtn.addEventListener('click', async () => {
             const articleId = {{ article.id }};
-            const singleTextArea = contentStructuringSectionsDiv.querySelector('textarea');
-            const fullContent = singleTextArea.value;
-
-            const structuredSections = {};
-            const lines = fullContent.split('\n');
-            let currentSectionTitle = 'Untitled Section';
-            let currentSectionContent = [];
-
-            lines.forEach(line => {
-                if (line.startsWith('## ')) {
-                    // Save previous section if it exists
-                    if (currentSectionTitle !== 'Untitled Section' || currentSectionContent.length > 0) {
-                        structuredSections[currentSectionTitle.trim()] = currentSectionContent.join('\n').trim();
-                    }
-                    currentSectionTitle = line.substring(3).trim();
-                    currentSectionContent = [];
-                } else {
-                    currentSectionContent.push(line);
-                }
-            });
-            // Save the last section
-            if (currentSectionTitle !== 'Untitled Section' || currentSectionContent.length > 0) {
-                structuredSections[currentSectionTitle.trim()] = currentSectionContent.join('\n').trim();
-            }
-
-            // If no sections were parsed, treat the whole content as one section
-            if (Object.keys(structuredSections).length === 0 && fullContent.trim() !== '') {
-                structuredSections['Content Structuring'] = fullContent.trim();
-            }
-
             const articleTitle = document.getElementById('article-title').value;
             const articleType = document.getElementById('article-type').value;
 
             if (!articleTitle || articleType === "Select Article Type") {
                 alert('Please provide an article title and select an article type.');
-                saveContentStructuringBtn.disabled = false;
                 return;
             }
 
-            console.log('Sending data to backend for saving:');
-            console.log('article_title:', articleTitle);
-            console.log('article_type:', articleType);
-            console.log('sections:', structuredSections);
+            // Collect data from all textareas
+            const updatedSections = {};
+            document.querySelectorAll('.section-container').forEach(container => {
+                const title = container.dataset.sectionTitle;
+                const enContent = container.querySelector('.lang-en-content').value;
+                const teContent = container.querySelector('.lang-te-content').value;
+                updatedSections[title] = {
+                    en: enContent,
+                    te: teContent
+                };
+            });
+
+            console.log('Saving data:', updatedSections);
 
             try {
                 saveContentStructuringBtn.textContent = 'Saving...';
@@ -204,7 +189,7 @@
                     body: JSON.stringify({
                         article_title: articleTitle,
                         article_type: articleType,
-                        sections: structuredSections
+                        sections: updatedSections
                     })
                 });
 
@@ -213,7 +198,6 @@
                     setTimeout(() => {
                         saveContentStructuringBtn.textContent = 'Save Content Structuring';
                         saveContentStructuringBtn.disabled = false;
-                        setContentStructuringEditability(false); // Go back to view mode after saving
                     }, 2000);
                 } else {
                     const errorData = await response.json();
@@ -221,18 +205,13 @@
                     saveContentStructuringBtn.textContent = 'Save Content Structuring';
                     saveContentStructuringBtn.disabled = false;
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 console.error('Error saving content structuring:', error);
                 alert('An error occurred while saving content structuring.');
                 saveContentStructuringBtn.textContent = 'Save Content Structuring';
                 saveContentStructuringBtn.disabled = false;
             }
         });
-
-        // Initial setup for existing content (if any, e.g., after page refresh)
-        // For now, it just ensures textareas are read-only if they exist
-        setContentStructuringEditability(true); // Start in edit mode
     });
 </script>
 {% endblock %}
