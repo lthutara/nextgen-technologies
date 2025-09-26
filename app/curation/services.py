@@ -23,7 +23,18 @@ class CurationService:
         if not full_content:
             return "[Summarization failed: Could not extract content.]"
 
-        new_summary = summarize_with_gemini(full_content)
+        prompt = f"""
+        Summarize the following article in a concise and informative way, capturing the key points.
+        The summary should be suitable for a tech news platform.
+        
+        Article:
+        ---
+        {full_content}
+        ---
+        
+        Summary:
+        """
+        new_summary = summarize_with_gemini(prompt)
         
         if not new_summary.startswith("[Summarization failed"):
             raw_article.summary = new_summary
@@ -41,16 +52,42 @@ class CurationService:
             return None
 
         prompts = {
-            "News": "Structure the following news article into these sections: \"What is this about?\", \"Any change to existing feature/item?\", \"Brief background of the news.\", \"When is it expected to come?\", \"What value it might add?\", \"Competitor advantage.\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-            "Research": "Structure the following research article into these sections: \"What is the research about?\", \"What are the key findings?\", \"What are the implications of the research?\", \"What are the limitations of the research?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-            "Analysis": "Structure the following analysis article into these sections: \"What is being analyzed?\", \"What are the main points of the analysis?\", \"What are the conclusions of the analysis?\", \"What are the recommendations?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content.",
-            "How-to": "Structure the following how-to article into these sections: \"What is the goal of this how-to?\", \"What are the prerequisites?\", \"What are the steps involved?\", \"What is the expected outcome?\" Also, provide a \"detailed Overall Summary\". Provide the output as a JSON object where keys are the section titles and values are the structured content."
+            "News": {
+                "What is this about?": "",
+                "Any change to existing feature/item?": "",
+                "Brief background of the news.": "",
+                "When is it expected to come?": "",
+                "What value it might add?": "",
+                "Competitor advantage.": "",
+                "detailed Overall Summary": ""
+            },
+            "Research": {
+                "What is the research about?": "",
+                "What are the key findings?": "",
+                "What are the implications of the research?": "",
+                "What are the limitations of the research?": "",
+                "detailed Overall Summary": ""
+            },
+            "Analysis": {
+                "What is being analyzed?": "",
+                "What are the main points of the analysis?": "",
+                "What are the conclusions of the analysis?": "",
+                "What are the recommendations?": "",
+                "detailed Overall Summary": ""
+            },
+            "How-to": {
+                "What is the goal of this how-to?": "",
+                "What are the prerequisites?": "",
+                "What are the steps involved?": "",
+                "What is the expected outcome?": "",
+                "detailed Overall Summary": ""
+            }
         }
 
         if article_type not in prompts:
             raise ValueError(f"Unsupported article type for content structuring: {article_type}")
 
-        full_prompt = f"{prompts[article_type]}\n\nArticle Content:\n{raw_article.content}"
+        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{raw_article.content}"
         
         structured_json_str = summarize_with_gemini(full_prompt)
         

@@ -163,6 +163,7 @@
                     body: JSON.stringify({ article_type: selectedType })
                 });
                 const result = await response.json();
+                console.log(result);
 
                 if (response.ok && result.success) {
                     structuredData = result.structured_sections;
@@ -178,6 +179,7 @@
         });
 
         function renderStructuredContent() {
+            console.log(structuredData);
             contentStructuringSectionsDiv.innerHTML = ''; // Clear loading message
 
             for (const sectionTitle in structuredData) {
@@ -290,8 +292,8 @@
                 const teText = section.te || '';
 
                 // For content, combine all sections
-                combinedEnContent += `## ${sectionTitle}\n\n${enText}\n\n`;
-                combinedTeContent += `## ${sectionTitle}_te\n\n${teText}\n\n`; // Placeholder for translated title
+                combinedEnContent += `${enText}\n\n`;
+                combinedTeContent += `${teText}\n\n`;
 
                 // For summary, take the first significant section or overall summary
                 if (!firstEnSummary && enText.length > 50) {
