@@ -2,6 +2,18 @@
 
 This file outlines the development plan for our next session.
 
+## Next Session Priority
+
+- [ ] **Integrate Real Telugu Translation:** Replace the `_te` placeholder with actual machine translation.
+
+## Completed This Session
+
+- [x] **Fix Gemini API Integration:**
+    - [x] Updated the model name from the deprecated `gemini-1.5-flash-002` to `gemini-2.5-flash`.
+    - [x] Refactored the prompt generation to be more explicit and ensure consistent JSON output for structured content.
+    - [x] Made the `summarize_with_gemini` function more generic.
+- [x] **Improve Final Content Formatting:** Removed markdown symbols (`##`) from the final article content.
+
 ## Priority 1: Implement RSS-Based Content Sourcing
 
 Our main goal is to build a robust and reliable content pipeline using RSS feeds.
@@ -78,7 +90,5 @@ Once we have links from RSS feeds, we need a way to get the full article content
 
 ## Current Session Action Items
 
-- [ ] **Improve Final Content Formatting:** Remove markdown symbols (##) and ensure proper newlines in final article textareas.
-- [ ] **Integrate Real Telugu Translation:** Replace the `_te` placeholder with actual machine translation.
 - [ ] **Implement "Save Draft" Option:** Allow saving final articles without immediate publishing.
 - [ ] **(Future) Integrate Rich Text Editor:** Enhance content editing experience with a rich text editor.

@@ -51,6 +51,12 @@ class CurationService:
         if not raw_article:
             return None
 
+        # First, extract the full content from the source URL
+        full_content = extract_article_content(raw_article.source_url)
+        if not full_content or full_content.isspace():
+            # Fallback to the stored content if extraction fails
+            full_content = raw_article.content
+
         prompts = {
             "News": {
                 "What is this about?": "",
@@ -87,7 +93,7 @@ class CurationService:
         if article_type not in prompts:
             raise ValueError(f"Unsupported article type for content structuring: {article_type}")
 
-        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{raw_article.content}"
+        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{full_content}"
         
         structured_json_str = summarize_with_gemini(full_prompt)
         

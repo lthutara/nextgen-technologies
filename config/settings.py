@@ -97,16 +97,12 @@ class Settings(BaseSettings):
         "Cybersecurity": [
             "https://thehackernews.com/feeds/posts/default",
             "https://krebsonsecurity.com/feed/",
-            "https://www.darkreading.com/rss_simple.asp",
             "https://grahamcluley.com/feed/",
             "https://schneier.com/blog/atom.xml",
-            "https://isc.sans.edu/rssfeed.html",
             "https://www.csoonline.com/feed",
             "https://www.bleepingcomputer.com/feed/",
             "https://www.crowdstrike.com/blog/feed/",
-            "https://www.paloaltonetworks.com/blog/feed/",
-            "https://www.mandiant.com/resources/blog/rss.xml",
-            "https://crypto.stanford.edu/rss.xml"
+            "https://www.mandiant.com/resources/blog/rss.xml"
         ],
         "Start-ups": [
             "http://techcrunch.com/startups/feed/",
