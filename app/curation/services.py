@@ -65,6 +65,7 @@ class CurationService:
                 "When is it expected to come?": "",
                 "What value it might add?": "",
                 "Competitor advantage.": "",
+                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
                 "detailed Overall Summary": ""
             },
             "Research": {
@@ -72,6 +73,7 @@ class CurationService:
                 "What are the key findings?": "",
                 "What are the implications of the research?": "",
                 "What are the limitations of the research?": "",
+                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
                 "detailed Overall Summary": ""
             },
             "Analysis": {
@@ -79,6 +81,7 @@ class CurationService:
                 "What are the main points of the analysis?": "",
                 "What are the conclusions of the analysis?": "",
                 "What are the recommendations?": "",
+                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
                 "detailed Overall Summary": ""
             },
             "How-to": {
@@ -86,6 +89,7 @@ class CurationService:
                 "What are the prerequisites?": "",
                 "What are the steps involved?": "",
                 "What is the expected outcome?": "",
+                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
                 "detailed Overall Summary": ""
             }
         }
@@ -93,7 +97,7 @@ class CurationService:
         if article_type not in prompts:
             raise ValueError(f"Unsupported article type for content structuring: {article_type}")
 
-        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{full_content}"
+        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. For the 'Original Sources' key, if no links are present in the article, output 'Not able to find, do more research on your own..'. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{full_content}"
         
         structured_json_str = summarize_with_gemini(full_prompt)
         

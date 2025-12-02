@@ -5,6 +5,29 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def _get_text_with_links(element):
+    """
+    Extracts text from an element, converting <a> tags to Markdown-style links [text](url).
+    """
+    # We work on a copy or directly modify if it's safe (it is here as we are just extracting)
+    # Iterate through all 'a' tags with href
+    if not element:
+        return ""
+        
+    # Clone the element to avoid side effects if the soup is used elsewhere (though not likely here)
+    # But simple tag modification is easier.
+    
+    # We need to be careful not to mess up the iteration if we modify the tree.
+    # Using list() creates a copy of the found elements.
+    for a in list(element.find_all('a', href=True)):
+        link_text = a.get_text(strip=True)
+        link_url = a['href']
+        if link_text and link_url:
+            # Replace the <a> tag with a string representation
+            a.replace_with(f" [{link_text}]({link_url}) ")
+            
+    return element.get_text(strip=True)
+
 def extract_article_content(url: str) -> str:
     """
     Fetches the content from a URL and extracts the main article text.
@@ -25,7 +48,7 @@ def extract_article_content(url: str) -> str:
             all_paragraphs = []
             for div in rich_text_divs:
                 paragraphs = div.find_all('p')
-                all_paragraphs.extend([p.get_text(strip=True) for p in paragraphs])
+                all_paragraphs.extend([_get_text_with_links(p) for p in paragraphs])
             full_text = '\n'.join(all_paragraphs)
             logger.info(f"Successfully extracted content using 'rich-text' strategy from {url}. Length: {len(full_text)} chars.")
             return full_text
@@ -40,14 +63,14 @@ def extract_article_content(url: str) -> str:
 
         if container:
             paragraphs = container.find_all('p')
-            full_text = '\n'.join([p.get_text(strip=True) for p in paragraphs])
+            full_text = '\n'.join([_get_text_with_links(p) for p in paragraphs])
             logger.info(f"Successfully extracted content using fallback strategy from {url}. Length: {len(full_text)} chars.")
             return full_text
 
         # Strategy 3: If no specific container is found, use the whole body
         logger.warning(f"Could not find a specific content container for {url}. Falling back to body.")
         paragraphs = soup.body.find_all('p')
-        full_text = '\n'.join([p.get_text(strip=True) for p in paragraphs])
+        full_text = '\n'.join([_get_text_with_links(p) for p in paragraphs])
         logger.info(f"Successfully extracted content from body of {url}. Length: {len(full_text)} chars.")
         return full_text
 
