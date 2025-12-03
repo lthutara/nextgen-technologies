@@ -74,7 +74,19 @@ async def process_article_page(article_id: int, request: Request, db: Session = 
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     
-    context = get_template_context(request, article=article)
+    # Fetch existing structured sections
+    sections = db.query(ArticleSection).filter(ArticleSection.raw_article_id == article_id).all()
+    structured_sections = {}
+    for section in sections:
+        structured_sections[section.section_title_en] = {
+            "en": section.section_content_en,
+            "te": section.section_content_te
+        }
+    
+    import json
+    structured_sections_json = json.dumps(structured_sections)
+
+    context = get_template_context(request, article=article, structured_sections_json=structured_sections_json)
     return templates.TemplateResponse("process.html", context)
 
 @router.get("/api/raw_articles", response_model=List[RawArticleResponse])

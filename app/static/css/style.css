@@ -154,3 +154,11 @@
 .navbar.bg-light {
     border-bottom: 1px solid #ced4da; /* A light grey border */
 }
+
+/* Article Content Image Responsiveness */
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block; /* To remove extra space below images */
+    margin-bottom: 1em; /* Add some spacing below images */
+}

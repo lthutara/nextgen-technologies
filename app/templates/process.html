@@ -114,7 +114,26 @@
         const imageUrl = document.getElementById('image-url');
 
         let currentLang = 'en';
-        let structuredData = {}; // To store the full bilingual data
+        // Initialize structuredData from server-side if available
+        let structuredData = {{ structured_sections_json | safe }} || {};
+
+        // Set initial article type if available
+        const initialArticleType = "{{ article.content_type }}";
+        if (initialArticleType && initialArticleType !== 'None') {
+             // Loop through options to find a match (case-insensitive or exact)
+            for (let i = 0; i < articleTypeSelect.options.length; i++) {
+                if (articleTypeSelect.options[i].value === initialArticleType) {
+                    articleTypeSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // Render initial content if available
+        if (Object.keys(structuredData).length > 0) {
+            renderStructuredContent();
+            updateLanguageView();
+        }
 
         // --- Language Toggle Logic ---
         langToggleGroup.addEventListener('click', (e) => {
@@ -291,16 +310,20 @@
                 const enText = section.en || '';
                 const teText = section.te || '';
 
-                // For content, combine all sections
-                combinedEnContent += `${enText}\n\n`;
-                combinedTeContent += `${teText}\n\n`;
+                // Simple text combination with clear separation
+                if (enText) {
+                     combinedEnContent += `## ${sectionTitle}\n\n${enText}\n\n`;
+                }
+                if (teText) {
+                     combinedTeContent += `## ${sectionTitle}\n\n${teText}\n\n`;
+                }
 
-                // For summary, take the first significant section or overall summary
+                // For summary, take the first significant section
                 if (!firstEnSummary && enText.length > 50) {
-                    firstEnSummary = enText.substring(0, 200) + '...'; // Take first 200 chars as summary
+                    firstEnSummary = enText.substring(0, 200) + '...'; 
                 }
                 if (!firstTeSummary && teText.length > 50) {
-                    firstTeSummary = teText.substring(0, 200) + '...'; // Take first 200 chars as summary
+                    firstTeSummary = teText.substring(0, 200) + '...';
                 }
             }
 
@@ -308,7 +331,7 @@
             finalContentEn.value = combinedEnContent.trim();
             finalSummaryEn.value = firstEnSummary || finalContentEn.value.substring(0, 200) + '...';
 
-            finalTitleTe.value = document.getElementById('article-title').value + '_te'; // Placeholder
+            finalTitleTe.value = document.getElementById('article-title').value + '_te'; 
             finalContentTe.value = combinedTeContent.trim();
             finalSummaryTe.value = firstTeSummary || finalContentTe.value.substring(0, 200) + '...';
         });
