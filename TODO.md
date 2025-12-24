@@ -1,3 +1,8 @@
+---
+*Last session: 2025-10-09*
+*Next session: Implement real Telugu translation.*
+---
+
 # NextGen Technologies - TODO
 
 This file outlines the development plan for our next session.
@@ -8,6 +13,8 @@ This file outlines the development plan for our next session.
 
 ## Completed This Session
 
+- [x] **Improved Content Extraction:** Fixed a critical bug where the content extractor was only parsing the first section of an article. It now correctly handles complex layouts with multiple content sections.
+- [x] **Fixed Cybersecurity Category:** Investigated and removed several broken RSS feeds from the "Cybersecurity" category, allowing it to populate with content correctly.
 - [x] **Fix Gemini API Integration:**
     - [x] Updated the model name from the deprecated `gemini-1.5-flash-002` to `gemini-2.5-flash`.
     - [x] Refactored the prompt generation to be more explicit and ensure consistent JSON output for structured content.
@@ -24,17 +31,7 @@ Our main goal is to build a robust and reliable content pipeline using RSS feeds
 
 - [ ] **Curate RSS Feeds:**
     - [ ] Research and add more high-quality RSS feeds for all technology categories defined in `config/settings.py`.
-    - [ ] Investigate and debug 'Cybersecurity' RSS feeds.
-    - [ ] **Note:** The 'Cybersecurity' RSS feeds might be failing because one or more of the URLs are invalid or unreachable. This could be causing the entire category to fail during scraping. The feeds need to be individually tested to identify the problematic source.
 
-
-## Priority 2: Content Extraction from Links
-
-Once we have links from RSS feeds, we need a way to get the full article content.
-
-- [ ] **Create a Generic Content Extractor:**
-    - [ ] Develop a utility function that takes a URL and uses `requests` and `BeautifulSoup` to extract the main article title and body.
-    - [ ] This will replace the current behavior of using the summary as the content.
 
 ## Testing Strategy
 
