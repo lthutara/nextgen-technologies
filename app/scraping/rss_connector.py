@@ -11,7 +11,9 @@ class RSSConnector(BaseScraper):
         self.rss_feeds = rss_feeds
 
     def fetch_articles(self, max_articles: int = None) -> List[ScrapedArticle]:
-        max_articles_per_feed = (max_articles or settings.MAX_ARTICLES_PER_SOURCE) // len(self.rss_feeds)
+        limit = max_articles or settings.MAX_ARTICLES_PER_SOURCE
+        # Ensure we fetch at least 1 article per feed to avoid 0 if limit < num_feeds
+        max_articles_per_feed = max(1, limit // len(self.rss_feeds))
         articles = []
 
         for feed_url in self.rss_feeds:
