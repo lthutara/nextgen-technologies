@@ -1,37 +1,80 @@
 {% extends "base.html" %}
 
-{% block title %}{{ article.title_en }} - NextGen Technologies{% endblock %}
+{% block title %}
+    {% if current_language == 'te' and article.title_te %}
+        {{ article.title_te }}
+    {% else %}
+        {{ article.title_en }}
+    {% endif %}
+    - NextGen Technologies
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-lg-8 offset-lg-2">
-            <h1 class="mb-3">{{ article.title_en }}</h1>
-            <p class="text-muted small">
-                {{ _("Published") }}: {{ article.published_date.strftime('%Y-%m-%d %H:%M') }} |
-                {{ _("Category") }}: <a href="/category/{{ article.category }}">{{ article.category }}</a>
-            </p>
-            
-            {% if article.image_url %}
-            <img src="{{ article.image_url }}" class="img-fluid rounded mb-4" alt="{{ article.title_en }}">
-            {% else %}
-            {% set placeholder_image = '/static/img/placeholder_general.png' %}
-            {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.png' %}
-            {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.png' %}
-            {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.png' %}
-            {% endif %}
-            <img src="{{ placeholder_image }}" class="img-fluid rounded mb-4" alt="Placeholder Image for {{ article.category }}">
-            {% endif %}
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">{{ _("Home") }}</a></li>
+                <li class="breadcrumb-item"><a href="/category/{{ article.category }}">{{ article.category }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ _("Article") }}</li>
+              </ol>
+            </nav>
 
-            <hr>
-            <div class="article-content" style="white-space: pre-wrap;">
-                {{ article.content_en | safe }}
-            </div>
-            <hr>
-            <p class="text-center">
-                <a href="{{ article.source_url }}" target="_blank" class="btn btn-primary">{{ _("Read original article") }}</a>
-                <a href="/" class="btn btn-secondary">{{ _("Back to Home") }}</a>
+            <h1 class="mb-3 article-title">
+                {% if current_language == 'te' and article.title_te %}
+                    {{ article.title_te }}
+                {% else %}
+                    {{ article.title_en }}
+                {% endif %}
+            </h1>
+            
+            <p class="text-muted small mb-4">
+                <i class="far fa-calendar-alt me-1"></i> {{ article.published_date.strftime('%B %d, %Y') }} |
+                <i class="far fa-folder me-1"></i> <a href="/category/{{ article.category }}" class="text-decoration-none">{{ article.category }}</a> |
+                <i class="fas fa-external-link-alt me-1"></i> {{ article.source_name }}
             </p>
+
+            {% if (current_language == 'te' and article.summary_te) or (current_language == 'en' and article.summary_en) %}
+            <div class="article-summary mb-4 p-3 bg-light border-start border-4 border-info">
+                <strong>{{ _("Summary") }}:</strong>
+                <p class="mb-0 mt-1">
+                    {% if current_language == 'te' and article.summary_te %}
+                        {{ article.summary_te }}
+                    {% else %}
+                        {{ article.summary_en }}
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+            
+            <div class="article-hero-image-container mb-4">
+                {% if article.image_url %}
+                    <img src="{{ article.image_url }}" class="img-fluid rounded article-hero-image" alt="{{ article.title_en }}">
+                {% else %}
+                    {% set placeholder_image = '/static/img/placeholder_general.png' %}
+                    {% if article.category == 'AI' %}{% set placeholder_image = '/static/img/placeholder_ai.png' %}
+                    {% elif article.category == 'Cloud Computing' %}{% set placeholder_image = '/static/img/placeholder_cloud.png' %}
+                    {% elif article.category == 'Defence Tech' %}{% set placeholder_image = '/static/img/placeholder_defence.png' %}
+                    {% endif %}
+                    <img src="{{ placeholder_image }}" class="img-fluid rounded article-hero-image" alt="Placeholder Image for {{ article.category }}">
+                {% endif %}
+            </div>
+
+            <div class="article-body-content">
+                {% if current_language == 'te' and article.content_te %}
+                    {{ article.content_te | markdown | safe }}
+                {% else %}
+                    {{ article.content_en | markdown | safe }}
+                {% endif %}
+            </div>
+            
+            <hr class="my-5">
+            
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <a href="/" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>{{ _("Back to Home") }}</a>
+                <a href="{{ article.source_url }}" target="_blank" class="btn btn-info text-white">{{ _("Read original article") }}<i class="fas fa-external-link-alt ms-2"></i></a>
+            </div>
         </div>
     </div>
 </div>

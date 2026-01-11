@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from contextlib import asynccontextmanager
 from app.scheduler import ArticleScheduler
+import markdown
 
 # --- Scheduler and Lifespan Management ---
 scheduler = ArticleScheduler()
@@ -46,6 +47,14 @@ app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=li
 static_files_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static")
 app.mount("/static", StaticFiles(directory=static_files_path), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+# Register Markdown filter
+def markdown_filter(text):
+    if text:
+        return markdown.markdown(text)
+    return ""
+
+templates.env.filters['markdown'] = markdown_filter
 
 # Initialize database
 create_tables()
@@ -100,7 +109,7 @@ async def home(request: Request, db: Session = Depends(get_db), lang: str = Cook
     language = get_user_language(request, lang)
     
     # Define categories for each section
-    latest_articles_categories = ["Start-ups", "Tech News"]
+    # latest_articles_categories = ["Start-ups", "Tech News"] # Removed restriction
     top_stories_categories = [
         "AI", "Quantum Computing", "Defence Tech", "Space Tech", 
         "Renewable Energy", "Cloud Computing", "Cybersecurity"
@@ -108,8 +117,8 @@ async def home(request: Request, db: Session = Depends(get_db), lang: str = Cook
     
     # Fetch articles for each section
     latest_articles = db.query(Article).filter(
-        Article.is_active == True,
-        Article.category.in_(latest_articles_categories)
+        Article.is_active == True
+        # Article.category.in_(latest_articles_categories) # Show all categories
     ).order_by(Article.scraped_date.desc()).limit(9).all()
     
     top_stories = db.query(Article).filter(
