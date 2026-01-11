@@ -96,7 +96,7 @@ async def get_raw_articles(
     offset: int = 0,
     db: Session = Depends(get_db)
 ):
-    query = db.query(RawArticle)
+    query = db.query(RawArticle).filter(RawArticle.status != 'published')
     if category and category != "All":
         query = query.filter(RawArticle.category == category)
     
