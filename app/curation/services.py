@@ -116,14 +116,27 @@ class CurationService:
         # Construct a detailed instruction for the JSON output
         fields_desc = json.dumps(prompts[article_type], indent=2)
         full_prompt = f"""
-        You are an expert tech content analyst. Analyze the following article and structure it according to the requested fields.
+        You are an expert tech content analyst and translator. Analyze the following article and structure it according to the requested fields.
         
         REQUIRED FIELDS AND INSTRUCTIONS:
         {fields_desc}
         
         OUTPUT FORMAT:
         You must output a VALID JSON object where the keys are the field names exactly as listed above.
-        The values should be your detailed analysis based on the article content.
+        For each field, the value must be a nested object with two keys: "en" and "te".
+        - "en": The content in English.
+        - "te": The content translated into professional, high-quality Telugu (avoiding literal translation, aiming for natural flow).
+        
+        Example Structure:
+        {{
+            "Field Name": {{
+                "en": "English content...",
+                "te": "Telugu content..."
+            }}
+        }}
+
+        For 'Scoring & Evaluation' and 'Verification & Sources', provide the analysis in English for both 'en' and 'te' keys, as these are for internal editor use.
+
         Do not include any markdown formatting (like ```json) in your response, just the raw JSON object.
         
         ARTICLE CONTENT:
@@ -145,21 +158,30 @@ class CurationService:
             parsed_content = json.loads(structured_json_str)
         except json.JSONDecodeError:
             print(f"Failed to parse AI JSON response: {structured_json_str[:200]}...")
-            parsed_content = {"Content Structuring": structured_json_str}
+            parsed_content = {"Content Structuring": {"en": structured_json_str, "te": ""}}
 
-        # Create bilingual structure
+        # Create bilingual structure (now native from AI)
         bilingual_content = {}
         for title, content in parsed_content.items():
-            # If content is a dict (like in Scoring & Evaluation), flatten or stringify it for simplicity in the UI for now
-            if isinstance(content, dict):
-                content_str = "\n".join([f"{k}: {v}" for k, v in content.items()])
+            if isinstance(content, dict) and "en" in content and "te" in content:
+                # Handle nested dictionary output (standard case)
+                 bilingual_content[title] = {
+                    "en": str(content["en"]),
+                    "te": str(content["te"])
+                }
+            elif isinstance(content, dict):
+                 # Handle complex fields like Scoring (flatten them)
+                 content_str = "\n".join([f"{k}: {v}" for k, v in content.items()])
+                 bilingual_content[title] = {
+                    "en": content_str,
+                    "te": content_str # Keep internal fields in English
+                }
             else:
-                content_str = str(content)
-                
-            bilingual_content[title] = {
-                "en": content_str,
-                "te": f"{content_str}_te" # Placeholder for actual translation
-            }
+                # Fallback
+                bilingual_content[title] = {
+                    "en": str(content),
+                    "te": ""
+                }
         
         return bilingual_content
 

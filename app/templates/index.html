@@ -12,7 +12,13 @@
                 </a>
                 <div class="card-body">
                     <h2 class="card-title">
-                        <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">{{ featured_article.title_en }}</a>
+                        <a href="/article/{{ featured_article.id }}" class="text-decoration-none text-dark">
+                            {% if current_language == 'te' and featured_article.title_te %}
+                                {{ featured_article.title_te }}
+                            {% else %}
+                                {{ featured_article.title_en }}
+                            {% endif %}
+                        </a>
                     </h2>
                     
                 </div>
@@ -46,7 +52,13 @@
                             <div class="col-md-8">
                                 <div class="card-body p-2">
                                     <h5 class="card-title truncate-text">
-                                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">{{ article.title_en }}</a>
+                                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark">
+                                            {% if current_language == 'te' and article.title_te %}
+                                                {{ article.title_te }}
+                                            {% else %}
+                                                {{ article.title_en }}
+                                            {% endif %}
+                                        </a>
                                     </h5>
                                     
                                 </div>
@@ -68,7 +80,13 @@
                 {% for article in top_stories %}
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div>
-                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title_en }}</a>
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">
+                            {% if current_language == 'te' and article.title_te %}
+                                {{ article.title_te }}
+                            {% else %}
+                                {{ article.title_en }}
+                            {% endif %}
+                        </a>
                         
                     </div>
                     <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
@@ -85,7 +103,13 @@
                 {% for article in ai_articles %}
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div>
-                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">{{ article.title }}</a>
+                        <a href="/article/{{ article.id }}" class="text-decoration-none text-dark d-block">
+                            {% if current_language == 'te' and article.title_te %}
+                                {{ article.title_te }}
+                            {% else %}
+                                {{ article.title_en }}
+                            {% endif %}
+                        </a>
                         
                     </div>
                     <img src="{{ article.image_url if article.image_url else url_for('static', path='img/placeholder_general.png') }}" class="img-fluid rounded-start ms-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Article image">
