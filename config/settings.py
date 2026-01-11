@@ -1,5 +1,10 @@
+import urllib.parse
 from pydantic_settings import BaseSettings
 from typing import Optional
+
+def google_news_url(keyword):
+    encoded = urllib.parse.quote(keyword)
+    return f"https://news.google.com/rss/search?q={encoded}&hl=en-US&gl=US&ceid=US:en"
 
 class Settings(BaseSettings):
     # Database
@@ -12,9 +17,9 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     
     # Scraping
-    SCRAPING_INTERVAL_HOURS: int = 0.01 
-    MAX_ARTICLES_PER_SOURCE: int = 10
-    REQUEST_DELAY: float = 1.0
+    SCRAPING_INTERVAL_HOURS: int = 1 
+    MAX_ARTICLES_PER_SOURCE: int = 50
+    REQUEST_DELAY: float = 0.5
     
     # Categories
     TECH_CATEGORIES: list = [
@@ -28,7 +33,10 @@ class Settings(BaseSettings):
         "Start-ups",
         "Tech News",
         "Semiconductors",
-        "Robotics"
+        "Robotics",
+        "Linux & Open Source",
+        "virtualization",
+        "general_tech_aggregators"
     ]
 
     ARXIV_CATEGORIES: list = [
@@ -47,14 +55,18 @@ class Settings(BaseSettings):
         "Start-ups": ["RSS"],
         "Tech News": ["RSS"],
         "Semiconductors": ["RSS"],
-        "Robotics": ["RSS"]
+        "Robotics": ["RSS"],
+        "Linux & Open Source": ["RSS"],
+        "virtualization": ["RSS"],
+        "general_tech_aggregators": ["RSS"]
     }
 
     RSS_FEEDS: dict = {
         "AI": [
             "https://research.google/blog/rss",
             "https://news.microsoft.com/source/topics/ai/feed/",
-            "https://bair.berkeley.edu/blog/feed.xml"
+            "https://bair.berkeley.edu/blog/feed.xml",
+            "https://analyticsindiamag.com/feed/"
         ],
         "Quantum Computing": [
             "https://quantumcomputingreport.com/feed/",
@@ -68,14 +80,19 @@ class Settings(BaseSettings):
             "https://breakingdefense.com/feed/",
             "https://www.army-technology.com/feed/",
             "https://www.airforce-technology.com/feed/",
-            "https://www.naval-technology.com/feed/"
+            "https://www.naval-technology.com/feed/",
+            "https://www.pib.gov.in/RssMain.aspx?Mod=L3",
+            "https://ddnews.gov.in/rss/defence",
+            "https://www.indiandefencenews.in/feeds/posts/default"
         ],
         "Space Tech": [
             "https://www.nasa.gov/news/feed/",
             "https://www.esa.int/rss/ESA_News",
             "https://www.space.com/feeds/news",
             "https://spacenews.com/feed/",
-            "https://www.universetoday.com/feed/"
+            "https://www.universetoday.com/feed/",
+            "https://www.isro.gov.in/feed",
+            "https://mosdac.gov.in/rss.xml"
         ],
         "Renewable Energy": [
             "https://www.renewableenergyworld.com/feed/",
@@ -109,7 +126,9 @@ class Settings(BaseSettings):
             "http://feeds.feedburner.com/venturebeat/",
             "https://www.wired.com/feed/rss",
             "https://producthunt.com/feed",
-            "https://news.ycombinator.com/rss"
+            "https://news.ycombinator.com/rss",
+            "https://yourstory.com/feed",
+            "https://inc42.com/feed"
         ],
         "Tech News": [
             "http://techcrunch.com/feed/",
@@ -118,7 +137,12 @@ class Settings(BaseSettings):
             "http://feeds.arstechnica.com/arstechnica/index/",
             "https://www.engadget.com/rss.xml",
             "https://www.cnet.com/rss/news/",
-            "https://www.techradar.com/rss"
+            "https://www.techradar.com/rss",
+            "https://economictimes.indiatimes.com/tech-bytes-rss-feed",
+            "https://www.gadgets360.com/rss/news",
+            "https://www.prnewswire.com/rss",
+            "https://www.technologyreview.com/feed/",
+            "https://news.mit.edu/rss/feed"
         ],
         "Semiconductors": [
             "https://www.semiconductor-today.com/rss.shtml",
@@ -128,15 +152,49 @@ class Settings(BaseSettings):
             "https://www.semiconductors.org/news-events/latest-news/feed/",
             "https://www.eetimes.com/tag/semiconductors/feed/",
             "https://semiengineering.com/feed/",
-            "https://semiwiki.com/feed/"
+            "https://semiwiki.com/feed/",
+            "https://www.techxplore.com/rss/tags/semiconductors/",
+            "https://www.servethehome.com/feed/",
+            "https://www.anandtech.com/rss/",
+            "https://www.trendforce.com/rss/semiconductor",
+            "https://www.digitimes.com/rss/daily.xml",
+            "https://www.tomshardware.com/feeds/tag/semiconductors.xml",
+            "https://chipsandcheese.com/feed/",
+            "https://www.cnx-software.com/feed/"           
         ],
         "Robotics": [
             "https://robohub.org/feed",
             "https://www.therobotreport.com/feed/",
             "https://spectrum.ieee.org/feeds/topic/robotics",
             "https://news.mit.edu/topic/robotics/rss"
-        ]
-    }
+        ],
+        "Linux & Open Source": [
+            "https://www.kernel.org/feeds/kdist.xml",
+            "https://lwn.net/headlines/rss",
+            "https://www.phoronix.com/rss.php",
+            "https://9to5linux.com/feed",
+            "https://itsfoss.com/rss",
+            "https://omgubuntu.co.uk/feed",
+            "https://www.postgresql.org/news.rss",
+            "https://blog.nginx.org/rss",
+            "https://planet.mysql.com/rss20.xml",
+            "https://opensource.googleblog.com/feeds/posts/default",
+            "https://aws.amazon.com/blogs/opensource/feed/"
+        ],
+        "virtualization": [
+            "https://www.yellow-bricks.com/feed/",
+            "https://williamlam.com/feed",
+            "https://virtualizationreview.com/rss-feeds/news.aspx",
+            "https://www.qemu.org/feed.xml"
+        ],
+        "general_tech_aggregators": [
+            google_news_url("Technology"),
+            google_news_url("Semiconductor Industry"),
+            google_news_url("Enterprise Software"),
+            google_news_url("Artificial Intelligence"),
+            google_news_url("Cloud Computing")
+        ],
+    } 
     
     CATEGORY_IMAGES: dict = {
         "AI": "/static/img/placeholder_ai.png",
@@ -150,6 +208,9 @@ class Settings(BaseSettings):
         "Tech News": "/static/img/placeholder.png",
         "Semiconductors": "/static/img/placeholder_general.png",
         "Robotics": "/static/img/placeholder_general.png",
+        "Linux & Open Source": "/static/img/placeholder_general.png",
+        "virtualization": "/static/img/placeholder_general.png",
+        "general_tech_aggregators": "/static/img/placeholder_general.png",
         "DEFAULT": "/static/img/placeholder.png"
     }
 
