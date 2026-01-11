@@ -57,76 +57,110 @@ class CurationService:
             # Fallback to the stored content if extraction fails
             full_content = raw_article.content
 
+        # Common fields for all article types
+        common_fields = {
+            "Major Highlights": "List 5-10 key takeaways or top highlights from the article.",
+            "Key Technologies & Keywords": "Identify major technologies, companies, or keywords mentioned.",
+            "Scoring & Evaluation": {
+                "Relevance Score": "Score from 1-10 for target tech audience.",
+                "Popularity Score": "How much buzz/interest this topic generally generates (1-10).",
+                "Breakthrough Score": "Is this a significant advancement or just routine news? (1-10).",
+                "Translation Recommendation": "Should we invest time in a high-quality Telugu translation? (Yes/No/Maybe and why)."
+            },
+            "Verification & Sources": "Suggest 2-3 specific search queries to find more authoritative blog posts or 'top 10' lists on this topic for manual verification."
+        }
+
         prompts = {
             "News": {
-                "What is this about?": "",
-                "Any change to existing feature/item?": "",
-                "Brief background of the news.": "",
-                "When is it expected to come?": "",
-                "What value it might add?": "",
-                "Competitor advantage.": "",
-                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
-                "detailed Overall Summary": ""
+                "Topic Overview": "What is this news about in one sentence?",
+                "Changes & Updates": "What has changed? Any new features or updates?",
+                "Context & Background": "Brief background info to help the reader understand the context.",
+                "Expected Timeline": "When is this expected to be released or implemented?",
+                "Value Proposition": "What is the primary value or impact of this news?",
+                "Competitive Landscape": "How does this compare to competitors or existing solutions?",
+                **common_fields,
+                "Detailed Summary": "A comprehensive summary of the entire news piece."
             },
             "Research": {
-                "What is the research about?": "",
-                "What are the key findings?": "",
-                "What are the implications of the research?": "",
-                "What are the limitations of the research?": "",
-                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
-                "detailed Overall Summary": ""
+                "Research Goal": "What problem is this research trying to solve?",
+                "Methodology": "Briefly describe how the research was conducted.",
+                "Key Findings": "What are the most important results?",
+                "Impact & Implications": "How does this research change the field?",
+                "Limitations": "What are the stated or apparent limitations of the work?",
+                **common_fields,
+                "Detailed Summary": "A comprehensive technical summary of the research."
             },
             "Analysis": {
-                "What is being analyzed?": "",
-                "What are the main points of the analysis?": "",
-                "What are the conclusions of the analysis?": "",
-                "What are the recommendations?": "",
-                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
-                "detailed Overall Summary": ""
+                "Subject of Analysis": "What specific trend, company, or tech is being analyzed?",
+                "Core Arguments": "What are the main points or arguments made in the analysis?",
+                "Data & Evidence": "What evidence is provided to support the claims?",
+                "Future Outlook": "What does the analysis predict for the future?",
+                "Recommendations": "What actions are suggested based on this analysis?",
+                **common_fields,
+                "Detailed Summary": "A comprehensive summary of the analysis."
             },
             "How-to": {
-                "What is the goal of this how-to?": "",
-                "What are the prerequisites?": "",
-                "What are the steps involved?": "",
-                "What is the expected outcome?": "",
-                "Original Sources": "List any original sources, official notes, or external links found in the article content in Markdown format (e.g., [Title](URL)). If none are found, strictly output: 'Not able to find, do more research on your own..'",
-                "detailed Overall Summary": ""
+                "Objective": "What will the reader achieve by following this guide?",
+                "Prerequisites": "What tools, knowledge, or setup is required?",
+                "Step-by-Step Breakdown": "Outline the main phases or steps of the process.",
+                "Troubleshooting & Tips": "Mention common pitfalls or helpful advice.",
+                "Final Result": "What is the end state after following the guide?",
+                **common_fields,
+                "Detailed Summary": "A comprehensive summary of the how-to guide."
             }
         }
 
         if article_type not in prompts:
             raise ValueError(f"Unsupported article type for content structuring: {article_type}")
 
-        full_prompt = f"You are a JSON generator. Your only job is to create a JSON object with the following keys: {list(prompts[article_type].keys())}. The values for each key must be the structured content from the article. For the 'Original Sources' key, if no links are present in the article, output 'Not able to find, do more research on your own..'. The output must be a valid JSON object, with no other text before or after the JSON. Here is the article content: \n\n{full_content}"
+        # Construct a detailed instruction for the JSON output
+        fields_desc = json.dumps(prompts[article_type], indent=2)
+        full_prompt = f"""
+        You are an expert tech content analyst. Analyze the following article and structure it according to the requested fields.
+        
+        REQUIRED FIELDS AND INSTRUCTIONS:
+        {fields_desc}
+        
+        OUTPUT FORMAT:
+        You must output a VALID JSON object where the keys are the field names exactly as listed above.
+        The values should be your detailed analysis based on the article content.
+        Do not include any markdown formatting (like ```json) in your response, just the raw JSON object.
+        
+        ARTICLE CONTENT:
+        ---
+        {full_content}
+        ---
+        """
         
         structured_json_str = summarize_with_gemini(full_prompt)
+        
+        # Clean the output if necessary (Gemini sometimes adds markdown even if told not to)
+        if "```json" in structured_json_str:
+            structured_json_str = structured_json_str.split("```json")[1].split("```")[0].strip()
+        elif "```" in structured_json_str:
+            structured_json_str = structured_json_str.split("```")[1].split("```")[0].strip()
         
         parsed_content = None
         try:
             parsed_content = json.loads(structured_json_str)
         except json.JSONDecodeError:
-            json_start = structured_json_str.find('```json')
-            json_end = structured_json_str.rfind('```')
-            if json_start != -1 and json_end != -1 and json_start < json_end:
-                extracted_json_str = structured_json_str[json_start + len('```json'):json_end].strip()
-                try:
-                    parsed_content = json.loads(extracted_json_str)
-                except json.JSONDecodeError:
-                    pass
-        
-        if parsed_content is None:
+            print(f"Failed to parse AI JSON response: {structured_json_str[:200]}...")
             parsed_content = {"Content Structuring": structured_json_str}
 
         # Create bilingual structure
         bilingual_content = {}
         for title, content in parsed_content.items():
-            # This is a placeholder for actual translation
+            # If content is a dict (like in Scoring & Evaluation), flatten or stringify it for simplicity in the UI for now
+            if isinstance(content, dict):
+                content_str = "\n".join([f"{k}: {v}" for k, v in content.items()])
+            else:
+                content_str = str(content)
+                
             bilingual_content[title] = {
-                "en": content,
-                "te": f"{content}_te"
+                "en": content_str,
+                "te": f"{content_str}_te" # Placeholder for actual translation
             }
         
-        # The frontend will now receive a dictionary with 'en' and 'te' keys for each section
         return bilingual_content
 
     def save_structured_content(self, article_id: int, article_title: str, article_type: str, sections_data: dict):

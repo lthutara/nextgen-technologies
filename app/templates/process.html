@@ -22,15 +22,18 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mt-4 mb-3">{{ _("Content Structuring") }}</h2>
+                <h2 class="mt-4 mb-3">{{ _("AI Analysis & Insights") }}</h2>
                 <div class="btn-group mb-3" role="group" id="lang-toggle-group">
                     <button type="button" class="btn btn-primary lang-toggle" data-lang="en">English</button>
                     <button type="button" class="btn btn-outline-secondary lang-toggle" data-lang="te">Telugu</button>
                 </div>
             </div>
+            <div id="ai-analysis-sections" class="mb-4"></div>
+
+            <h2 class="mt-4 mb-3">{{ _("Content Structuring") }}</h2>
             <div id="content-structuring-sections"></div>
 
-            <button class="btn btn-primary" id="save-content-structuring-btn">{{ _("Save Content Structuring") }}</button>
+            <button class="btn btn-primary mt-3" id="save-content-structuring-btn">{{ _("Save Content Structuring") }}</button>
         </div>
 
         <!-- Right Column: Final Article Details -->
@@ -98,9 +101,17 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const articleTypeSelect = document.getElementById('article-type');
+        const aiAnalysisSectionsDiv = document.getElementById('ai-analysis-sections');
         const contentStructuringSectionsDiv = document.getElementById('content-structuring-sections');
         const saveContentStructuringBtn = document.getElementById('save-content-structuring-btn');
         const langToggleGroup = document.getElementById('lang-toggle-group');
+
+        const analysisKeys = [
+            "Major Highlights",
+            "Key Technologies & Keywords",
+            "Scoring & Evaluation",
+            "Verification & Sources"
+        ];
 
         const prepareFinalContentBtn = document.getElementById('prepare-final-content-btn');
         const publishFinalArticleBtn = document.getElementById('publish-final-article-btn');
@@ -199,16 +210,26 @@
 
         function renderStructuredContent() {
             console.log(structuredData);
-            contentStructuringSectionsDiv.innerHTML = ''; // Clear loading message
+            aiAnalysisSectionsDiv.innerHTML = ''; 
+            contentStructuringSectionsDiv.innerHTML = ''; 
 
             for (const sectionTitle in structuredData) {
                 const sectionData = structuredData[sectionTitle];
                 const sectionWrapper = document.createElement('div');
                 sectionWrapper.classList.add('mb-4', 'section-container');
                 sectionWrapper.dataset.sectionTitle = sectionTitle;
+                
+                // Add analysis class if it's an analysis section
+                const isAnalysis = analysisKeys.includes(sectionTitle);
+                if (isAnalysis) {
+                    sectionWrapper.classList.add('analysis-section');
+                } else {
+                    sectionWrapper.classList.add('content-section');
+                }
 
                 const titleElement = document.createElement('h5');
                 titleElement.textContent = sectionTitle;
+                if (isAnalysis) titleElement.classList.add('text-primary');
                 sectionWrapper.appendChild(titleElement);
 
                 // English version
@@ -217,7 +238,7 @@
                 enWrapper.dataset.lang = 'en';
                 const enTextArea = document.createElement('textarea');
                 enTextArea.classList.add('form-control', 'lang-en-content');
-                enTextArea.rows = 5;
+                enTextArea.rows = isAnalysis ? 4 : 6;
                 enTextArea.value = sectionData.en || '';
                 enWrapper.appendChild(enTextArea);
                 sectionWrapper.appendChild(enWrapper);
@@ -228,12 +249,16 @@
                 teWrapper.dataset.lang = 'te';
                 const teTextArea = document.createElement('textarea');
                 teTextArea.classList.add('form-control', 'lang-te-content');
-                teTextArea.rows = 5;
+                teTextArea.rows = isAnalysis ? 4 : 6;
                 teTextArea.value = sectionData.te || '';
                 teWrapper.appendChild(teTextArea);
                 sectionWrapper.appendChild(teWrapper);
 
-                contentStructuringSectionsDiv.appendChild(sectionWrapper);
+                if (isAnalysis) {
+                    aiAnalysisSectionsDiv.appendChild(sectionWrapper);
+                } else {
+                    contentStructuringSectionsDiv.appendChild(sectionWrapper);
+                }
             }
         }
 
@@ -305,10 +330,11 @@
             let firstEnSummary = '';
             let firstTeSummary = '';
 
-            for (const sectionTitle in structuredData) {
-                const section = structuredData[sectionTitle];
-                const enText = section.en || '';
-                const teText = section.te || '';
+            // Only loop through content sections, not analysis sections
+            document.querySelectorAll('.content-section').forEach(container => {
+                const sectionTitle = container.dataset.sectionTitle;
+                const enText = container.querySelector('.lang-en-content').value;
+                const teText = container.querySelector('.lang-te-content').value;
 
                 // Simple text combination with clear separation
                 if (enText) {
@@ -325,7 +351,7 @@
                 if (!firstTeSummary && teText.length > 50) {
                     firstTeSummary = teText.substring(0, 200) + '...';
                 }
-            }
+            });
 
             finalTitleEn.value = document.getElementById('article-title').value;
             finalContentEn.value = combinedEnContent.trim();
