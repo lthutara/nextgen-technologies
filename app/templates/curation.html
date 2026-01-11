@@ -4,7 +4,17 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">{{ _("Raw Articles for Curation") }}</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ _("Raw Articles for Curation") }}</h1>
+        <div class="w-25">
+            <select class="form-select" id="category-filter">
+                <option value="All">{{ _("All Categories") }}</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
 
     <div id="raw-articles-list" class="row">
         <!-- Raw articles will be loaded here by JavaScript -->
@@ -23,13 +33,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         const articlesList = document.getElementById('raw-articles-list');
         const loadMoreBtn = document.getElementById('load-more-btn');
+        const categoryFilter = document.getElementById('category-filter');
         let offset = 0;
         const limit = 20;
 
-        async function fetchRawArticles() {
+        async function fetchRawArticles(reset = false) {
+            if (reset) {
+                offset = 0;
+                articlesList.innerHTML = '<p>{{ _("Loading...") }}</p>';
+                loadMoreBtn.style.display = 'block';
+            }
+
+            const category = categoryFilter.value;
+            let url = `/api/raw_articles?limit=${limit}&offset=${offset}`;
+            if (category && category !== 'All') {
+                url += `&category=${encodeURIComponent(category)}`;
+            }
+
             try {
-                const response = await fetch(`/api/raw_articles?limit=${limit}&offset=${offset}`);
+                const response = await fetch(url);
                 const data = await response.json();
+
+                if (reset) {
+                    articlesList.innerHTML = '';
+                }
 
                 if (data.length === 0) {
                     loadMoreBtn.style.display = 'none';
@@ -39,21 +66,29 @@
                     return;
                 }
 
-                if (offset === 0) {
-                    articlesList.innerHTML = '';
-                }
-
                 data.forEach(article => {
+                    const pubDate = article.published_date ? new Date(article.published_date).toLocaleString() : 'N/A';
+                    const scrapDate = new Date(article.scraped_date).toLocaleString();
+
                     const articleCard = `
                         <div class="col-md-6 mb-4" id="article-card-${article.id}">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${article.title}</h5>
-                                    <p class="card-text summary-text">${article.summary}</p>
-                                    <p class="card-text"><small class="text-muted">Source: ${article.source_name} | Category: ${article.category}</small></p>
-                                    <a href="${article.source_url}" class="btn btn-secondary btn-sm" target="_blank">Read Original</a>
-                                    <a href="/curation/process/${article.id}" class="btn btn-info btn-sm">Process</a>
-                                    <button class="btn btn-danger btn-sm reject-btn" data-id="${article.id}">Reject</button>
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title text-truncate-2">${article.title}</h5>
+                                        <span class="badge bg-secondary">${article.category}</span>
+                                    </div>
+                                    <div class="mb-2 small text-muted">
+                                        <div><strong>Published:</strong> ${pubDate}</div>
+                                        <div><strong>Scraped:</strong> ${scrapDate}</div>
+                                        <div><strong>Source:</strong> ${article.source_name}</div>
+                                    </div>
+                                    <p class="card-text summary-text flex-grow-1">${article.summary || 'No summary available.'}</p>
+                                    <div class="mt-3">
+                                        <a href="${article.source_url}" class="btn btn-outline-secondary btn-sm" target="_blank">View Original</a>
+                                        <a href="/curation/process/${article.id}" class="btn btn-primary btn-sm">Process</a>
+                                        <button class="btn btn-danger btn-sm reject-btn float-end" data-id="${article.id}">Reject</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -79,6 +114,8 @@
         }
 
         async function handleAction(articleId, action) {
+            if (!confirm('Are you sure you want to reject this article?')) return;
+            
             try {
                 const response = await fetch(`/api/raw_articles/${articleId}/${action}`, {
                     method: 'POST',
@@ -99,12 +136,11 @@
             }
         }
 
-
-
-        loadMoreBtn.addEventListener('click', fetchRawArticles);
+        loadMoreBtn.addEventListener('click', () => fetchRawArticles(false));
+        categoryFilter.addEventListener('change', () => fetchRawArticles(true));
 
         // Initial load
-        fetchRawArticles();
+        fetchRawArticles(true);
     });
 </script>
 {% endblock %}

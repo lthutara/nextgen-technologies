@@ -91,11 +91,16 @@ async def process_article_page(article_id: int, request: Request, db: Session = 
 
 @router.get("/api/raw_articles", response_model=List[RawArticleResponse])
 async def get_raw_articles(
+    category: Optional[str] = None,
     limit: int = 20,
     offset: int = 0,
     db: Session = Depends(get_db)
 ):
-    raw_articles = db.query(RawArticle).order_by(RawArticle.scraped_date.desc()).offset(offset).limit(limit).all()
+    query = db.query(RawArticle)
+    if category and category != "All":
+        query = query.filter(RawArticle.category == category)
+    
+    raw_articles = query.order_by(RawArticle.scraped_date.desc()).offset(offset).limit(limit).all()
     return raw_articles
 
 @router.post("/api/raw_articles/{article_id}/approve")
